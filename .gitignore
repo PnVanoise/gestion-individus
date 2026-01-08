@@ -4,3 +4,6 @@ etat-des-lieux/*
 cahier-des-charges/MCD/*
 !cahier-des-charges/MCD/V4-gn/
 !cahier-des-charges/MCD/V4-gn/**
+
+!cahier-des-charges/MCD/images/
+!cahier-des-charges/MCD/images/**
