@@ -1,4 +1,6 @@
 etat-des-lieux/*
 !etat-des-lieux/*.docx
+
 cahier-des-charges/MCD/*
-!cahier-des-charges/MCD/V4-gn/*
+!cahier-des-charges/MCD/V4-gn/
+!cahier-des-charges/MCD/V4-gn/**
