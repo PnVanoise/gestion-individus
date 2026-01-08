@@ -22,11 +22,15 @@
   - [Architecture](#architecture)
   - [Modèle de données relationnel](#modèle-de-données-relationnel)
     - [Gestion des individus](#gestion-des-individus)
-    - [Gestion des capture et échantillons](#gestion-des-capture-et-échantillons)
-      - [Prélèvement / capture](#prélèvement--capture)
+      - [Individus](#individus)
+      - [Interaction](#interaction)
+    - [Captures et échantillons](#captures-et-échantillons)
+      - [Prélèvements / captures](#prélèvements--captures)
       - [Echantillons](#echantillons)
       - [Analyse des échantillons](#analyse-des-échantillons)
-    - [Marquages et équipements sur individus](#marquages-et-équipements-sur-individus)
+    - [Marquages et équipements d'un individu](#marquages-et-équipements-dun-individu)
+      - [Marquage et équipements](#marquage-et-équipements)
+    - [Bibliothèque de matériel](#bibliothèque-de-matériel)
     - [Types de sujet d’observation](#types-de-sujet-dobservation)
 
 ## Contexte et besoin
@@ -123,7 +127,6 @@ Cela concerne les données de biométrie réalisées lors des captures et recapt
   - Localisation de la mesure sur l’animal (nomenclature)
   - Mesure
   - Unité de mesure (nomenclature)
-  - 
 
 ### Les résultats d'analyse d'échantillons effectués en laboratoire
 
@@ -221,6 +224,9 @@ Les développements à venir s'appuieront donc sur le socle de Geonature, ainsi 
 ## Modèle de données relationnel
 
 ### Gestion des individus
+
+#### Individus
+
 Depuis la version 2.16.0 du cœur de geonature et de la version 1.1.0 d gn_module_monitoring, la notion d’individu est rajoutée pour les protocoles de suivi avec l’ajout des tables `t_base_individuals` et `t_marking_events` (issue [#213](https://github.com/PnX-SI/gn_module_monitoring/issues/213)).
 
 Le modèle de données doit permettre d’associer un ou plusieurs individus à une observation occasionnelle ou à un protocole de saisie (module monitoring).
@@ -231,14 +237,24 @@ Il semble judicieux, pour plus de souplesse dans l’utilisation, que l’indivi
 
 ![Schémas cor_counting_occtax / t_individuals](./images/gestion_individus_1.png)
 
-### Gestion des capture et échantillons
+#### Interaction
+
+Pour le suivi des populations, la notion d'interaction entre individus peut-être une niche d'informations. Dans notre contexte il s'agirait de qualifier l'interaction, lors d'une observation entre 2 individus de même espèce ou nom.
+
+L'interaction peut aussi, par exemple, être intéressante à relever entre un invertébré et son hôte.
+
+La notion d'interaction entre individus étant générique nous créons donc une table permettant la qualification d'une interaction entre 2 entrées de la table `t_counting_occtax`.
+
+![Schémas t_ineraction_occtax](./images/interaction.png)
+
+### Captures et échantillons
 
 Dans notre contexte un individu, peut être capturé pour être marqué ou équipé d’émetteurs, pour de la prise d’échantillons …
 
 Parallèlement, côté botanique ou entomologie, lors d’un relevé (une observation), des échantillons peuvent être emportés pour des analyses afin de déterminer précisément par exemple les espèces récoltées.
 D’autre part des échantillons d’indicateurs de présence ou passage d’animaux peuvent eux aussi être prélevés sur le terrain à destination d’analyses en laboratoire.
 
-#### Prélèvement / capture
+#### Prélèvements / captures
 
 Pour répondre à notre besoin sur les individus et dans le souci de réaliser une fonctionnalité servant toute la communauté Geonature, nous implémenterons donc une table capture/prélèvement `pr_occtax.t_captures`.
 
@@ -272,29 +288,45 @@ La table t_collection_samples ne fera référence qu’à cette table t_samples.
 Ne semble pas utile aujourd’hui et en l’état à la communauté Geonature. Se pose donc la question de l’implémentation d’un module à part ou de la création d’une base de données à part.
 Amandine Sahl pose même la question de l’intérêt du stockage en BDD au lieu d’une simple numérisation en pdf.
 
-### Marquages et équipements sur individus
-Depuis la version 2.16.0, il existe une table `gn_monitoring.t_marking_events` qui permet le stockage d’évènements de marquage pour le monitoring.
+### Marquages et équipements d'un individu
 
-Dans notre contexte en plus de marquages, nous avons besoin d’équiper les individus d’équipements de type collier GPS. Afin de répondre à divers besoins nous pouvons imaginer tout type d’équipements. Pour répondre à ce besoin nous allons donc renommer et modifier la table `t_marking_events` afin qu’elle puisse stocker tout type d’équipement (balises, marquages, …) : `gn_monitoring.t_individual_equipments`.
+#### Marquage et équipements
 
-La table `t_individual_equipments` est liées à une capture, donc a un relevé et n’a donc plus besoin pour la partie occtax des champs de type « évènement » (localisation, date, opérateur).
+Depuis la version 2.16.0, il existe une table `gn_monitoring.t_marking_events` qui permet le stockage d’évènements de marquage pour le monitoring. 
 
-Côté monitoring, il nous faut, cependant, recréer une table afin de disposer de ces éléments lors de la saisie. Nous créerons donc la table `gn_monitoring.t_capture_events` qui reprends les champs de la table `t_individual_events` non repris dans `t_individual_equipments`.
+Dans notre contexte en plus de marquages, nous avons besoin d’équiper les individus d’équipements de type collier GPS. Afin de répondre à divers besoins, un individu pourra donc être équipé de tout type de matériel via le champ `id_tracking_material` qui pointe sur la table `gn_monitoring.bib_tracking_material`.
+
+Ainsi, comme nous dépassons la notion de marquage pôur désormais parler d'équipements, la table `t_marking_events` afin qu’elle puisse stocker tout type d’équipement (balises, marquages, …) : `gn_monitoring.t_individual_equipments`.
+
+La table `t_individual_equipments` est liées à une capture, donc a un relevé et n’a désormais plus besoin pour la partie occtax des champs de type « évènement » (localisation, date, opérateur). Cependant, côté monitoring, il nous faut, recréer une table afin de disposer de ces éléments lors de la saisie. Nous créerons donc la table `gn_monitoring.t_capture_events` qui reprends les champs de la table `t_individual_events` non repris dans `t_individual_equipments`.
+
+Le modèle de la table `t_individual_equipments` permet désormais d'accuillir aussi la nouvelle génération de collier GPS qui fais office de marquage et de balise.
  
 ![Schémas t_individual_equipment](./images/marquages_equipements.png)
+
+### Bibliothèque de matériel
+
+La bibiothèque `gn_monitoring.bib_tracking_material` permet de recenser les différents matériels de suivi : pièges photos, colliers GPS ...
+
+Cette table permet d'associer une balise lors de l'équipement d'un individu, ou bien de définir un piège photo spécifique ou une balise spécifique comme role pour un relevé.  
+
+![Schémas bib_tracking_material](./images/materiel.png)
 
 ### Types de sujet d’observation
 
 Il doit être, au regard de nos besoins, possible d’associer à un relevé (une observation) un observateur humain ou non humain.
 
 Types d'observateurs :
-- Humain
-- Machine
+- **Humain**
+- **Machine**
   - Emetteur ou balise : Exemple des colliers GPS
   - Capteur : Exemple des pièges photos
 
 Aujourd’hui la table `pr_occtax.id_releve_occtax` est la table centrale du relevé. Chaque relevé dispose d’un identifiant unique `id_releve_occtax`. Les observateurs humains lui sont associés via la table de correspondance `cor_role_releves_occtax` et le champ `id_role`.
 
-Nous pouvons donc imaginer la possibilité de rattacher de la même façon un émetteur ou un algorithme à un relevé via une table de correspondance. Pour des facilités de traitement et de filtre des données un champ `id_nomenclature_digitiser_type` peut être utilisé pour indiquer le type du sujet du relevé.
+Pour répondre à notre besoin nous créons un nouveaux champs `id_nomenclature_role_type`' qui permettra d'indiquer de quel type de rôle il s'agit : Un humain ou une machine.
+
+Si le rôle est une machine, alors la table `gn_monitoring.bib_tracking_material` viendra compléter la table `t_role` avec une relation 1:1 afin de donner quelques informations supplémentaires sur cet "Observateur machine". Cet équipement aura alors comme valeur pour son `id_nomenclature_material_type` quleque chose comme 'piège photo' ou 'collier GPS'.
 
 ![Schémas id_nomenclature_role_type](./images/type_de_sujet.png)
+
