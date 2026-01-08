@@ -25,6 +25,9 @@
     - [Gestion des capture et échantillons](#gestion-des-capture-et-échantillons)
       - [Prélèvement / capture](#prélèvement--capture)
       - [Echantillons](#echantillons)
+      - [Analyse des échantillons](#analyse-des-échantillons)
+    - [Marquages et équipements sur individus](#marquages-et-équipements-sur-individus)
+    - [Types de sujet d’observation](#types-de-sujet-dobservation)
 
 ## Contexte et besoin
 Le Parc national de la Vanoise (PNV) et le Parc national du Grand Paradis (PNGP) partagent un patrimoine naturel exceptionnel, avec des milieux alpins similaires et des espèces emblématiques communes. Les populations animales, notamment le bouquetin des Alpes, se déplacent ponctuellement entre les deux territoires, ignorant les frontières administratives. Cette continuité écologique nécessite une approche transfrontalière de la gestion et du suivi de la biodiversité.
@@ -263,3 +266,35 @@ Pour certaines espèces, la détermination ne peut se faire qu'après analyse à
 La table t_collection_samples ne fera référence qu’à cette table t_samples.
 
 -------------------------------
+
+#### Analyse des échantillons
+
+Ne semble pas utile aujourd’hui et en l’état à la communauté Geonature. Se pose donc la question de l’implémentation d’un module à part ou de la création d’une base de données à part.
+Amandine Sahl pose même la question de l’intérêt du stockage en BDD au lieu d’une simple numérisation en pdf.
+
+### Marquages et équipements sur individus
+Depuis la version 2.16.0, il existe une table `gn_monitoring.t_marking_events` qui permet le stockage d’évènements de marquage pour le monitoring.
+
+Dans notre contexte en plus de marquages, nous avons besoin d’équiper les individus d’équipements de type collier GPS. Afin de répondre à divers besoins nous pouvons imaginer tout type d’équipements. Pour répondre à ce besoin nous allons donc renommer et modifier la table `t_marking_events` afin qu’elle puisse stocker tout type d’équipement (balises, marquages, …) : `gn_monitoring.t_individual_equipments`.
+
+La table `t_individual_equipments` est liées à une capture, donc a un relevé et n’a donc plus besoin pour la partie occtax des champs de type « évènement » (localisation, date, opérateur).
+
+Côté monitoring, il nous faut, cependant, recréer une table afin de disposer de ces éléments lors de la saisie. Nous créerons donc la table `gn_monitoring.t_capture_events` qui reprends les champs de la table `t_individual_events` non repris dans `t_individual_equipments`.
+ 
+![Schémas t_individual_equipment](./images/marquages_equipements.png)
+
+### Types de sujet d’observation
+
+Il doit être, au regard de nos besoins, possible d’associer à un relevé (une observation) un observateur humain ou non humain.
+
+Types d'observateurs :
+- Humain
+- Machine
+  - Emetteur ou balise : Exemple des colliers GPS
+  - Capteur : Exemple des pièges photos
+
+Aujourd’hui la table `pr_occtax.id_releve_occtax` est la table centrale du relevé. Chaque relevé dispose d’un identifiant unique `id_releve_occtax`. Les observateurs humains lui sont associés via la table de correspondance `cor_role_releves_occtax` et le champ `id_role`.
+
+Nous pouvons donc imaginer la possibilité de rattacher de la même façon un émetteur ou un algorithme à un relevé via une table de correspondance. Pour des facilités de traitement et de filtre des données un champ `id_nomenclature_digitiser_type` peut être utilisé pour indiquer le type du sujet du relevé.
+
+![Schémas id_nomenclature_role_type](./images/type_de_sujet.png)
