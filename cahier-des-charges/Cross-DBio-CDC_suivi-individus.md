@@ -235,7 +235,7 @@ Ainsi pour la faune, l’objet d’une observation peut être un taxon ou un ind
 
 Il semble judicieux, pour plus de souplesse dans l’utilisation, que l’individu soit rattaché au niveau du dénombrement d’une occurrence : nous pouvons ainsi ajouter un champ `id_individual` à la table `pr_occtax.cor_couting_occtax` qui fera référence à la table des individus.
 
-![Schémas cor_counting_occtax / t_individuals](./images/gestion_individus_1.png)
+![Schémas cor_counting_occtax / t_individuals](./images/gestion_individus.png)
 
 #### Interaction
 
