@@ -23,15 +23,15 @@
   - [Modèle de données relationnel](#modèle-de-données-relationnel)
     - [Gestion des individus](#gestion-des-individus)
       - [Individus](#individus)
-      - [Interaction](#interaction)
+      - [Interactions](#interactions)
     - [Captures et échantillons](#captures-et-échantillons)
       - [Prélèvements / captures](#prélèvements--captures)
       - [Echantillons](#echantillons)
       - [Analyse des échantillons](#analyse-des-échantillons)
     - [Marquages et équipements d'un individu](#marquages-et-équipements-dun-individu)
-      - [Marquage et équipements](#marquage-et-équipements)
     - [Bibliothèque de matériel](#bibliothèque-de-matériel)
     - [Types de sujet d’observation](#types-de-sujet-dobservation)
+    - [Modèle de données complet](#modèle-de-données-complet)
 
 ## Contexte et besoin
 Le Parc national de la Vanoise (PNV) et le Parc national du Grand Paradis (PNGP) partagent un patrimoine naturel exceptionnel, avec des milieux alpins similaires et des espèces emblématiques communes. Les populations animales, notamment le bouquetin des Alpes, se déplacent ponctuellement entre les deux territoires, ignorant les frontières administratives. Cette continuité écologique nécessite une approche transfrontalière de la gestion et du suivi de la biodiversité.
@@ -237,7 +237,7 @@ Il semble judicieux, pour plus de souplesse dans l’utilisation, que l’indivi
 
 ![Schémas cor_counting_occtax / t_individuals](./images/gestion_individus.png)
 
-#### Interaction
+#### Interactions
 
 Pour le suivi des populations, la notion d'interaction entre individus peut-être une niche d'informations. Dans notre contexte il s'agirait de qualifier l'interaction, lors d'une observation entre 2 individus de même espèce ou nom.
 
@@ -252,6 +252,7 @@ La notion d'interaction entre individus étant générique nous créons donc une
 Dans notre contexte un individu, peut être capturé pour être marqué ou équipé d’émetteurs, pour de la prise d’échantillons …
 
 Parallèlement, côté botanique ou entomologie, lors d’un relevé (une observation), des échantillons peuvent être emportés pour des analyses afin de déterminer précisément par exemple les espèces récoltées.
+
 D’autre part des échantillons d’indicateurs de présence ou passage d’animaux peuvent eux aussi être prélevés sur le terrain à destination d’analyses en laboratoire.
 
 #### Prélèvements / captures
@@ -260,7 +261,7 @@ Pour répondre à notre besoin sur les individus et dans le souci de réaliser u
 
 Cette table est directement liée à `pr_occtax.t_releves` qui est la table « évenement » de référence. Nous ne trouverons donc dans `t_capture` que les champs relatifs à la capture/au prélèvement.
 
-![Schémas t_capture](./images/prelevements_capture.png)
+![Schémas t_captures](./images/prelevements_capture.png)
 
 #### Echantillons
 
@@ -274,6 +275,8 @@ Directement liés à une capture/un prélèvement, les échantillons seront stoc
 
 La chaîne t_releves_occtax -> t_captures -> t_samples permet d'associer un échantillon à un relevé lors du prélèvement. Dans certains cas le taxon, voir l'individu sont connus donc directement renseignés.
 
+![Schémas t_samples](./images/echantillons.png)
+
 ---------------------------
 
 !!!!!!! Question d'une table n:n entre t_samples et counting
@@ -285,12 +288,13 @@ La table t_collection_samples ne fera référence qu’à cette table t_samples.
 
 #### Analyse des échantillons
 
-Ne semble pas utile aujourd’hui et en l’état à la communauté Geonature. Se pose donc la question de l’implémentation d’un module à part ou de la création d’une base de données à part.
-Amandine Sahl pose même la question de l’intérêt du stockage en BDD au lieu d’une simple numérisation en pdf.
+Aujourd'hui, au Parc national de la Vanoise, les résultats d'analyses sont compilés dans un fichier xsl, pour la plupart. Dans d'autres structures, ils sont classés sous forme papier et/ou numérisé en format pdf.
+
+Le projet est de faciliter l'exploitation des données en enregistrant ces fiches dans une table dans la plupart des champs seront configurables via un champ de type JSON `additional_data` de la table `gn_commons.t_sample_analysis`.
+
+![Schémas t_sample_analysis](./images/analyses_des_echantillons.png)
 
 ### Marquages et équipements d'un individu
-
-#### Marquage et équipements
 
 Depuis la version 2.16.0, il existe une table `gn_monitoring.t_marking_events` qui permet le stockage d’évènements de marquage pour le monitoring. 
 
@@ -330,3 +334,8 @@ Si le rôle est une machine, alors la table `gn_monitoring.bib_tracking_material
 
 ![Schémas id_nomenclature_role_type](./images/type_de_sujet.png)
 
+### Modèle de données complet
+
+Le modèle de données, ci-dessous, ne reprends pas l'ensemble du modèle de Géonature. Il ne présente seulement les nouvelles tables créées pour le projet (en orange) ainsi que les tables du modèle actuel liées (en vert). Les nouveaux champs sont surlignés en orangeLes tables en 
+
+![Schémas complet](./images/mcd.png)
