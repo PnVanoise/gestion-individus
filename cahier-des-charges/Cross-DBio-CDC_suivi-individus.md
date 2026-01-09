@@ -277,13 +277,6 @@ La chaîne t_releves_occtax -> t_captures -> t_samples permet d'associer un éch
 
 ![Schémas t_samples](./images/echantillons.png)
 
----------------------------
-
-!!!!!!! Question d'une table n:n entre t_samples et counting
-
-Pour certaines espèces, la détermination ne peut se faire qu'après analyse à la bino (ou autre) de l'échantillon. Dans ce cas il sera alors intéressant de pouvoir lier l'échantillon au dénombrement (moins restrictif que de le lier à l'occurence) à postériori après analyse de l’échantillon, un lien est fait via `id_counting_occtax` à `pr_occtax.t_counting_occtax` afin de r. Dans le cas d'échantillons afin de garder l’information « tel échantillon a permis de déterminer telle espèce ».
-La table t_collection_samples ne fera référence qu’à cette table t_samples.
-
 -------------------------------
 
 #### Analyse des échantillons
