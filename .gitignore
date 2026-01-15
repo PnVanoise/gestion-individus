@@ -6,7 +6,8 @@ cahier-des-charges/*
 cahier-des-charges/MCD/**
 
 !cahier-des-charges/MCD/V4-gn/
-!cahier-des-charges/MCD/V4-gn/**
+!cahier-des-charges/MCD/V4-gn/*.drawio
+!cahier-des-charges/MCD/V4-gn/*.drawio.png
 
 !cahier-des-charges/images/
 !cahier-des-charges/images/**
