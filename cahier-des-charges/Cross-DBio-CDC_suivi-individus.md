@@ -329,6 +329,6 @@ Si le rôle est une machine, alors la table `gn_monitoring.bib_tracking_material
 
 ### Modèle de données complet
 
-Le modèle de données, ci-dessous, ne reprends pas l'ensemble du modèle de Géonature. Il ne présente seulement les nouvelles tables créées pour le projet (en orange) ainsi que les tables du modèle actuel liées (en vert). Les nouveaux champs sont surlignés en orangeLes tables en 
+Le modèle de données, ci-dessous, ne reprends pas l'ensemble du modèle de Géonature. Il ne présente seulement les nouvelles tables créées pour le projet (en orange) ainsi que les tables du modèle actuel qui leur sont liées (en vert). Les champs créés dans des tables existantes sont surlignés en orange. Les tables en violet appartiennent à une autre BDD.
 
 ![Schémas complet](./images/mcd.png)
