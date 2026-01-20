@@ -453,12 +453,12 @@ Exemple de structure du champ pour une analyse de type **Sérologie** :
 {
   "searched_virus": {
     "1": {   
-      "name": xxx,
-      "result": xxx,
+      "name": "xxx",
+      "result": "xxx",
     },
     "2": {
-      "name": xxx,
-      "result": xxx,
+      "name": "xxx",
+      "result": "xxx",
     },
     [...]
   }
@@ -469,12 +469,12 @@ Exemple de structure du champ pour une analyse de type **Test gestationnel** :
 {
   "gestational_test": {
     "1": {   
-      "dosage_type": xxx,
-      "value": xxx,
+      "dosage_type": "xxx",
+      "value": "xxx",
     },
     "2": {
-      "dosage_type": xxx,
-      "value": xxx,
+      "dosage_type": "xxx",
+      "value": "xxx",
     },
     [...]
   }
@@ -521,12 +521,12 @@ Exemple de structure du champ pour une analyse de type **Autopsie** :
 
 | Donnée initiale | Schéma / table | Champ | Explication |
 | :---- | :---- | :----| :---- |
-- Identifiant de l'émetteur ou de la balise
-- Individu
-- Géolocalisation (point) |  |  |  |
-- Date + heure
-- Température contre l'animal
-- Autres informations dépendantes des émetteurs
+| Identifiant de l'émetteur ou de la balise |  |  |  |
+| Individu |  |  |  |
+| Géolocalisation (point) |  |  |  |
+| Date + heure |  |  |  |
+| Température contre l'animal |  |  |  |
+|  Autres informations dépendantes des émetteurs |  |  |  |
 
 ### Données d'observation via piège photo
 
@@ -534,10 +534,10 @@ Exemple de structure du champ pour une analyse de type **Autopsie** :
 
 | Donnée initiale | Schéma / table | Champ | Explication |
 | :---- | :---- | :----| :---- |
-- Identifiant du piège photo
-- Espèce |  |  |  |
-- Dénombrement
-- Géolocalisation
-- Date + heure
-- Méthode de détermination (humain ou algorithme)
-- Autres informations d'observation
+| Identifiant du piège photo |  |  |  |
+| Espèce |  |  |  |
+| Dénombrement |  |  |  |
+| Géolocalisation |  |  |  |
+| Date + heure |  |  |  |
+| Méthode de détermination (humain ou algorithme) |  |  |  |
+| Autres informations d'observation |  |  |  |
