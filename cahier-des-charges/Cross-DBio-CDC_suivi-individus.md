@@ -44,6 +44,7 @@
     - [Données d'observation via piège photo](#données-dobservation-via-piège-photo)
 
 ## Contexte et besoin
+
 Le Parc national de la Vanoise (PNV) et le Parc national du Grand Paradis (PNGP) partagent un patrimoine naturel exceptionnel, avec des milieux alpins similaires et des espèces emblématiques communes. Les populations animales, notamment le bouquetin des Alpes, se déplacent ponctuellement entre les deux territoires, ignorant les frontières administratives. Cette continuité écologique nécessite une approche transfrontalière de la gestion et du suivi de la biodiversité.
 
 Les deux parcs ont développé, au fil des années, des protocoles de suivi rigoureux qui ont généré une masse considérable de données : plus de 1500 bouquetins capturés et marqués, des dizaines de milliers de données GPS issues du suivi télémétrique de différentes espèces (bouquetins, gypaètes barbus, aigles royaux, tétras-lyres), et une quantité croissante d'images issues des pièges photographiques. Ces données, d'une valeur scientifique inestimable, sont actuellement stockées dans des formats et sur des supports variés, rendant leur exploitation complexe et limitée.
@@ -246,7 +247,7 @@ Pour comprendre comment ont été implémentés ces champs en BDD, cf le tableau
 ### Observation via piège photo
 
 - Identifiant du piège photo
-- Espèce |  |  |  |
+- Espèce
 - Dénombrement
 - Géolocalisation
 - Date + heure
@@ -267,6 +268,8 @@ Ainsi pour la faune, l’objet d’une observation peut être un taxon ou un ind
 
 Il semble judicieux, pour plus de souplesse dans l’utilisation, que l’individu soit rattaché au niveau du dénombrement d’une occurrence : nous pouvons ainsi ajouter un champ `id_individual` à la table `pr_occtax.cor_couting_occtax` qui fera référence à la table des individus.
 
+*Schéma de liaison entre les tables t_individuals et cor_counting_occtax* :
+
 ![Schémas cor_counting_occtax / t_individuals](./images/gestion_individus.png)
 
 ### Interactions entre individus
@@ -275,9 +278,11 @@ Pour le suivi des populations, la notion d'interaction entre individus peut-êtr
 
 L'interaction peut aussi, par exemple, être intéressante à relever entre un invertébré et son hôte.
 
-La notion d'interaction entre individus étant générique nous créons donc une table permettant la qualification d'une interaction entre 2 entrées de la table `t_counting_occtax`.
+La notion d'interaction entre individus étant générique nous créons donc une table permettant la qualification d'une interaction entre 2 entrées de la table `cor_counting_occtax`.
 
-![Schémas t_ineraction_occtax](./images/interaction.png)
+*Shéma de liaison entre les tables t_interaction_occtax et cor_counting_occtax* :
+
+![Schémas t_interaction_occtax](./images/interaction.png)
 
 ### Captures et échantillons
 
@@ -293,7 +298,9 @@ Pour répondre à notre besoin sur les individus et dans le souci de réaliser u
 
 Cette table est directement liée à `pr_occtax.t_releves_occtax` qui est la table « évènement » de référence. Nous ne trouverons donc dans `t_capture` que les champs relatifs à la capture/au prélèvement.
 
-![Schémas t_captures](./images/prelevements_capture.png)
+*Schéma de la table t_captures* :
+
+![Schémas t_captures](./images/capture.png)
 
 #### Echantillons
 
@@ -303,13 +310,17 @@ Un travail sur la notion d'échantillons et de collections, porté par le CBNA (
 
 Notre besoin viendra compléter ce travail.
 
+*Extrait du cahier des charges 'Relevés floristiques et phytosocialogiques' du CBNA'* :
+
+![Schémas t_samples](./images/cdc_cbna_echantillons_mcd.png)
+  
 Directement liés à une capture/un prélèvement, les échantillons seront stockés dans la table `pr_occtax.t_samples`. 
 
 La chaîne t_releves_occtax -> t_captures -> t_samples permet d'associer un échantillon à un relevé lors du prélèvement. Dans certains cas le taxon, voir l'individu sont connus donc directement renseignés.
 
-![Schémas t_samples](./images/echantillons.png)
+*Shéma de la table t_samples* :
 
--------------------------------
+![Schémas t_samples](./images/echantillons.png)
 
 #### Analyse des échantillons
 
@@ -317,20 +328,28 @@ Aujourd'hui, au Parc national de la Vanoise, les résultats d'analyses sont comp
 
 Le projet est de faciliter l'exploitation des données en enregistrant ces fiches dans une table dans la plupart des champs seront configurables via un champ de type JSON `additional_data` de la table `gn_commons.t_sample_analysis`.
 
+*Shémas de liaison entre les tables t_samples et t_samples_analysis* :
+
 ![Schémas t_sample_analysis](./images/analyses_des_echantillons.png)
 
 ### Marquages et équipements d'un individu
 
 Depuis la version 2.16.0, il existe une table `gn_monitoring.t_marking_events` qui permet le stockage d’évènements de marquage pour le monitoring. 
 
+*Ancien shémas de liaison entre les tables t_individuals et t_marking_events* :
+
+![Ancien Schémas de t_individuals](./images/t_individual_old.png)
+
 Dans notre contexte en plus de marquages, nous avons besoin d’équiper les individus d’équipements de type collier GPS. Afin de répondre à divers besoins, un individu pourra donc être équipé de tout type de matériel via le champ `id_tracking_material` qui pointe sur la table `gn_monitoring.bib_tracking_material`.
 
 Ainsi, comme nous dépassons la notion de marquage pôur désormais parler d'équipements, la table `t_marking_events` afin qu’elle puisse stocker tout type d’équipement (balises, marquages, …) : `gn_monitoring.t_individual_equipments`.
 
-La table `t_individual_equipments` est liées à une capture, donc a un relevé et n’a désormais plus besoin pour la partie occtax des champs de type « évènement » (localisation, date, opérateur). Cependant, côté monitoring, il nous faut, recréer une table afin de disposer de ces éléments lors de la saisie. Nous créerons donc la table `gn_monitoring.t_capture_events` qui reprends les champs de la table `t_individual_events` non repris dans `t_individual_equipments`.
+La table `t_individual_equipments` est liée à une capture, donc a un relevé et n’a désormais plus besoin, pour la partie occtax, des champs de type « évènement » (localisation, date, opérateur). Cependant, côté monitoring, il nous faut, recréer une table afin de disposer de ces éléments lors de la saisie. Nous créerons donc la table `gn_monitoring.t_capture_events` qui reprends les champs de la table `t_marking_events` non repris dans `t_individual_equipments`.
 
 Le modèle de la table `t_individual_equipments` permet désormais d'accuillir aussi la nouvelle génération de collier GPS qui fais office de marquage et de balise.
- 
+
+*Schéma de liaison entre les tables t_individual_euipments, t_capture_events et t_captures* :
+
 ![Schémas t_individual_equipment](./images/marquages_equipements.png)
 
 ### Bibliothèque de matériel
@@ -338,6 +357,8 @@ Le modèle de la table `t_individual_equipments` permet désormais d'accuillir a
 La bibiothèque `gn_monitoring.bib_tracking_material` permet de recenser les différents matériels de suivi : pièges photos, colliers GPS ...
 
 Cette table permet d'associer une balise lors de l'équipement d'un individu, ou bien de définir un piège photo spécifique ou une balise spécifique comme role pour un relevé.  
+
+*Shéma de la table bib_tracking_material* :
 
 ![Schémas bib_tracking_material](./images/materiel.png)
 
@@ -356,6 +377,8 @@ Aujourd’hui la table `pr_occtax.id_releve_occtax` est la table centrale du rel
 Pour répondre à notre besoin nous créons un nouveaux champs `id_nomenclature_role_type`' qui permettra d'indiquer de quel type de rôle il s'agit : Un humain ou une machine.
 
 Si le rôle est une machine, alors la table `gn_monitoring.bib_tracking_material` viendra compléter la table `t_role` avec une relation 1:1 afin de donner quelques informations supplémentaires sur cet "Observateur machine". Cet équipement aura alors comme valeur pour son `id_nomenclature_material_type` quleque chose comme 'piège photo' ou 'collier GPS'.
+
+*Shéma de liaison entre les tables bib_tracking_material et t_roles* :
 
 ![Schémas id_nomenclature_role_type](./images/type_de_sujet.png)
 
