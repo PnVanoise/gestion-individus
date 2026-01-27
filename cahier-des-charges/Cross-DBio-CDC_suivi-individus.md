@@ -270,7 +270,7 @@ Il semble judicieux, pour plus de souplesse dans l’utilisation, que l’indivi
 
 *Schéma de liaison entre les tables t_individuals et cor_counting_occtax* :
 
-![Schémas cor_counting_occtax / t_individuals](./images/gestion_individus.png)
+![Schéma cor_counting_occtax / t_individuals](./images/gestion_individus.png)
 
 ### Interactions entre individus
 
@@ -282,7 +282,7 @@ La notion d'interaction entre individus étant générique nous créons donc une
 
 *Shéma de liaison entre les tables t_interaction_occtax et cor_counting_occtax* :
 
-![Schémas t_interaction_occtax](./images/interaction.png)
+![Schéma t_interaction_occtax](./images/interaction.png)
 
 ### Captures et échantillons
 
@@ -300,7 +300,7 @@ Cette table est directement liée à `pr_occtax.t_releves_occtax` qui est la tab
 
 *Schéma de la table t_captures* :
 
-![Schémas t_captures](./images/capture.png)
+![Schéma t_captures](./images/capture.png)
 
 #### Echantillons
 
@@ -312,7 +312,7 @@ Notre besoin viendra compléter ce travail.
 
 *Extrait du cahier des charges 'Relevés floristiques et phytosocialogiques' du CBNA'* :
 
-![Schémas t_samples](./images/cdc_cbna_echantillons_mcd.png)
+![Schéma t_samples](./images/cdc_cbna_echantillons_mcd.png)
   
 Directement liés à une capture/un prélèvement, les échantillons seront stockés dans la table `pr_occtax.t_samples`. 
 
@@ -320,7 +320,7 @@ La chaîne t_releves_occtax -> t_captures -> t_samples permet d'associer un éch
 
 *Shéma de la table t_samples* :
 
-![Schémas t_samples](./images/echantillons.png)
+![Schéma t_samples](./images/echantillons.png)
 
 #### Analyse des échantillons
 
@@ -330,7 +330,7 @@ Le projet est de faciliter l'exploitation des données en enregistrant ces fiche
 
 *Shémas de liaison entre les tables t_samples et t_samples_analysis* :
 
-![Schémas t_sample_analysis](./images/analyses_des_echantillons.png)
+![Schéma t_sample_analysis](./images/analyses_des_echantillons.png)
 
 ### Marquages et équipements d'un individu
 
@@ -338,7 +338,7 @@ Depuis la version 2.16.0, il existe une table `gn_monitoring.t_marking_events` q
 
 *Ancien shémas de liaison entre les tables t_individuals et t_marking_events* :
 
-![Ancien Schémas de t_individuals](./images/t_individual_old.png)
+![Ancien schéma de t_individuals](./images/t_individual_old.png)
 
 Dans notre contexte en plus de marquages, nous avons besoin d’équiper les individus d’équipements de type collier GPS. Afin de répondre à divers besoins, un individu pourra donc être équipé de tout type de matériel via le champ `id_tracking_material` qui pointe sur la table `gn_monitoring.bib_tracking_material`.
 
@@ -350,7 +350,7 @@ Le modèle de la table `t_individual_equipments` permet désormais d'accuillir a
 
 *Schéma de liaison entre les tables t_individual_euipments, t_capture_events et t_captures* :
 
-![Schémas t_individual_equipment](./images/marquages_equipements.png)
+![Schéma t_individual_equipment](./images/marquages_equipements.png)
 
 ### Bibliothèque de matériel
 
@@ -360,7 +360,7 @@ Cette table permet d'associer une balise lors de l'équipement d'un individu, ou
 
 *Shéma de la table bib_tracking_material* :
 
-![Schémas bib_tracking_material](./images/materiel.png)
+![Schéma bib_tracking_material](./images/materiel.png)
 
 ### Types de sujet d’observation
 
@@ -380,13 +380,13 @@ Si le rôle est une machine, alors la table `gn_monitoring.bib_tracking_material
 
 *Shéma de liaison entre les tables bib_tracking_material et t_roles* :
 
-![Schémas id_nomenclature_role_type](./images/type_de_sujet.png)
+![Schéma id_nomenclature_role_type](./images/type_de_sujet.png)
 
 ### Modèle de données complet
 
-Le modèle de données, ci-dessous, ne reprends pas l'ensemble du modèle de Géonature. Il ne présente seulement les nouvelles tables créées pour le projet (en orange) ainsi que les tables du modèle actuel qui leur sont liées (en vert). Les champs créés dans des tables existantes sont surlignés en orange. Les tables en violet appartiennent à une autre BDD.
+Le modèle de données, ci-dessous, ne reprends pas l'ensemble du modèle de Géonature. Il ne présente que les nouvelles tables créées pour le projet (en orange) ainsi que les tables du modèle actuel qui leur sont liées (en vert) et sont nécessaires à la compréhension du modèle. Les champs créés dans des tables existantes sont surlignés en orange. Les tables en violet appartiennent à une autre BDD.
 
-![Schémas complet](./images/mcd.png)
+![Schéma complet](./images/mcd.png)
 
 ## Mise en relation avec le besoin initial
 
@@ -400,17 +400,17 @@ Via les tableaux de correspondance suivant, nous validons que l'ensemble des don
 | Géolocalisation | pr_occtax.t_releves_occtax | geom_local, geom_4326 |  |
 | Lieu-dit | pr_occtax.t_releves_occtax | place_name |  |
 | Date de capture | pr_occtax.t_releves_occtax | date_min |  |
-| Type de capture | gn_monitoring.t_pickups | id_nomenclature_pickup_protocol |  |
-| Température | gn_monitoring.t_pickups | additional_data | `{[...],"temperature": "000"}` |
-| Poids | gn_monitoring.t_pickups | additional_data | `{[...],"weight": "000"}` |
-| Rythme cardiaque | gn_monitoring.t_pickups | additional_data | `{[...],"heart_rate": "000"}` |
-| Echographie | gn_monitoring.t_pickups | additional_data | `{[...],"pregnant": "yes/no"}` |
-| Anesthésie : Nombre de tirs | gn_monitoring.t_pickups | effort |  |
-| Anesthésie : Distance tir | gn_monitoring.t_pickups | additional_data | `{[...],"distance": "000"}` |
-| Anesthésie injection : Heure, localisation, nom produit, posologie | gn_monitoring.t_pickups | additional_data | `{[...],"anesthesia_injection":{"hour": "000","location": "xxx","product": "xxx","dosage": "xxx"}}` |
-| Anesthésie réactions (x n): Type, unité, valeur | gn_monitoring.t_pickups | additional_data | `{[...],"anesthesia_reaction":{"1":{"type": "xxx","delai": "000"},"2":{"type": "xxx","delai": "000"}}}` |
-| Antidote : Heure injection, produit, posologie | gn_monitoring.t_pickups | additional_data | `{[...],"antidote_injection":{"hour": "000","location": "xxx","product": "xxx","dosage": "xxx"}}` |  |  |
-| Anesthésie : Observations | gn_monitoring.t_pickups | comment |  |
+| Type de capture | gn_monitoring.t_captures | id_nomenclature_capture_protocol |  |
+| Température | gn_monitoring.t_captures | additional_data | `{[...],"temperature": "000"}` |
+| Poids | gn_monitoring.t_captures | additional_data | `{[...],"weight": "000"}` |
+| Rythme cardiaque | gn_monitoring.t_captures | additional_data | `{[...],"heart_rate": "000"}` |
+| Echographie | gn_monitoring.t_captures | additional_data | `{[...],"pregnant": "yes/no"}` |
+| Anesthésie : Nombre de tirs | gn_monitoring.t_captures | effort |  |
+| Anesthésie : Distance tir | gn_monitoring.t_captures | additional_data | `{[...],"distance": "000"}` |
+| Anesthésie injection : Heure, localisation, nom produit, posologie | gn_monitoring.t_captures | additional_data | `{[...],"anesthesia_injection":{"hour": "000","location": "xxx","product": "xxx","dosage": "xxx"}}` |
+| Anesthésie réactions (x n): Type, unité, valeur | gn_monitoring.t_captures | additional_data | `{[...],"anesthesia_reaction":{"1":{"type": "xxx","delai": "000"},"2":{"type": "xxx","delai": "000"}}}` |
+| Antidote : Heure injection, produit, posologie | gn_monitoring.t_captures | additional_data | `{[...],"antidote_injection":{"hour": "000","location": "xxx","product": "xxx","dosage": "xxx"}}` |  |  |
+| Anesthésie : Observations | gn_monitoring.t_captures | comment |  |
 
 ### Données de prélèvements d’échantillons
 
@@ -456,7 +456,7 @@ Via les tableaux de correspondance suivant, nous validons que l'ensemble des don
 | Donnée initiale | Schéma / table | Champ | Explication |
 | :---- | :---- | :----| :---- |
 | Date des mesures | pr_occtax.t_releves_occtax | date_min |  |
-| Mesures : Localisation sur l’animal, mesure, unité de mesure | gn_monitoring.t_pickups | additional_data | `{[...],"measures":{"m1": {"value": "000","unit": "xxx"},"m2": {"value": "000","unit": "xxx"}, [...]}}` |
+| Mesures : Localisation sur l’animal, mesure, unité de mesure | gn_monitoring.t_captures | additional_data | `{[...],"measures":{"m1": {"value": "000","unit": "xxx"},"m2": {"value": "000","unit": "xxx"}, [...]}}` |
 
 ### Données sur les résultats d'analyses d'échantillons effectuées en laboratoire
 
@@ -472,6 +472,7 @@ Via les tableaux de correspondance suivant, nous validons que l'ensemble des don
 Les résultats d'analyses à proprement parlé seront stockés dans le champ `additional_data` de la table (?).t_sample_analysis.
 
 Exemple de structure du champ pour une analyse de type **Sérologie** :
+
 ```json
 {
   "searched_virus": {
@@ -487,7 +488,9 @@ Exemple de structure du champ pour une analyse de type **Sérologie** :
   }
 }
 ```
+
 Exemple de structure du champ pour une analyse de type **Test gestationnel** :
+
 ```json
 {
   "gestational_test": {
@@ -503,9 +506,11 @@ Exemple de structure du champ pour une analyse de type **Test gestationnel** :
   }
 }
 ```
+
 Pour les analyses de type **Génétique**, nous n'avons pas d'exemple à proposer.
 
 Exemple de structure du champ pour une analyse de type **Autopsie** :
+
 ```json
 {
   "autopsy": {
