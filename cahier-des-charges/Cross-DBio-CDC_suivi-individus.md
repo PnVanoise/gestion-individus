@@ -409,7 +409,7 @@ Via les tableaux de correspondance suivant, nous validons que l'ensemble des don
 | Anesthésie : Distance tir | gn_monitoring.t_captures | additional_data | `{[...],"distance": "000"}` |
 | Anesthésie injection : Heure, localisation, nom produit, posologie | gn_monitoring.t_captures | additional_data | `{[...],"anesthesia_injection":{"hour": "000","location": "xxx","product": "xxx","dosage": "xxx"}}` |
 | Anesthésie réactions (x n): Type, unité, valeur | gn_monitoring.t_captures | additional_data | `{[...],"anesthesia_reaction":{"1":{"type": "xxx","delai": "000"},"2":{"type": "xxx","delai": "000"}}}` |
-| Antidote : Heure injection, produit, posologie | gn_monitoring.t_captures | additional_data | `{[...],"antidote_injection":{"hour": "000","location": "xxx","product": "xxx","dosage": "xxx"}}` |  |  |
+| Antidote : Heure injection, produit, posologie | gn_monitoring.t_captures | additional_data | `{[...],"antidote_injection":{"hour": "000","location": "xxx","product": "xxx","dosage": "xxx"}}` |||
 | Anesthésie : Observations | gn_monitoring.t_captures | comment |  |
 
 ### Données de prélèvements d’échantillons
@@ -545,10 +545,12 @@ Exemple de structure du champ pour une analyse de type **Autopsie** :
 
 ### Données d'observations via émetteur
 
-*A terminer*
+> [!WARNING!]
+> A terminer
+
 
 | Donnée initiale | Schéma / table | Champ | Explication |
-| :---- | :---- | :----| :---- |
+| :---- | :---- | :---- | :---- |
 | Identifiant de l'émetteur ou de la balise |  |  |  |
 | Individu |  |  |  |
 | Géolocalisation (point) |  |  |  |
@@ -558,7 +560,8 @@ Exemple de structure du champ pour une analyse de type **Autopsie** :
 
 ### Données d'observation via piège photo
 
-*A terminer*
+> [!WARNING!]
+> A terminer
 
 | Donnée initiale | Schéma / table | Champ | Explication |
 | :---- | :---- | :----| :---- |
