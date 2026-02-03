@@ -9,6 +9,13 @@
   - [Contexte et besoin](#contexte-et-besoin)
   - [Objectifs](#objectifs)
   - [Architecture](#architecture)
+    - [Le choix d'aller vers GeoNature](#le-choix-daller-vers-geonature)
+    - [Organisation des développements](#organisation-des-développements)
+      - [Module individus](#module-individus)
+      - [Modifications dans le coeur](#modifications-dans-le-coeur)
+        - [Occtax](#occtax)
+        - [Synthese](#synthese)
+        - [Common](#common)
   - [Données concernées par le projet](#données-concernées-par-le-projet)
     - [La capture](#la-capture)
     - [Les prélèvements d’échantillons](#les-prélèvements-déchantillons)
@@ -70,13 +77,25 @@ Elle remplacera au parc national de la Vanoise :
 
 ## Architecture
 
-Après divers échanges avec le arc national des Cevennes et le Parc national des Ecrins (tous 2 à l'initiative de Géonature), notre besoin peut intégrer le projet Geonature via une nouvelle contribution. Sous réserve 
-- de respecter les méthodes de travail
-- d'élargir les réflexions pour des fonctionnalités servant l'ensemble de la communauté
+### Le choix d'aller vers GeoNature
 
-Dans la présentation du modèle de données ci-après, nous nous efforçons donc d'expliquer la généricité des choix opérés.
+> [!WARNING]
+> Ajouter l'explication du pourquoi GeoNature
+
+GeoNature est actuellement le coeur du sytème d'information du parc national de la Vanoise.
+
+Les observations occasionelles d'animaux marqués, donc d'individus, sont actuellement insérées dans la synthèse mais avec une perte d'information occasionnée par le fait que GeoNature ne puisse pas accueillir tous les éléments de l'observations.
+
+Au regard du besoin du PNV, de son envie de faire bénéficier à d'uatres du développement de nouvelles fonctionnalités et de son souhait de contribuer plus fortement au projet de Geonature, le choix de contribuer au projet de GeoNature est une évidence.
+
+Après divers échanges avec le Parc national des Cevennes et le Parc national des Ecrins, notre souhait est conforté par leur validation à nous appuyer sur cet écosystème pour développer les fonctionnalités dont nous avons besoin. Cela implique :
+
+- d'élargir les réflexions pour des fonctionnalités servant l'ensemble de la communauté
+- de respecter les méthodes de travail du projet
+- de respecter les choix techniques
 
 Les développements à venir s'appuieront donc sur le socle de Geonature, ainsi les technologies utilisées seront donc celles de la dernière release :
+
 - PostgreSQL / PostGIS
 - Python 3 et dépendances Python nécessaires à l’application
 - Flask (framework web Python)
@@ -84,6 +103,50 @@ Les développements à venir s'appuieront donc sur le socle de Geonature, ainsi 
 - Angular 15, Angular CLI, NodeJS
 - Librairies javascript (Leaflet, ChartJS)
 - Librairies CSS (Bootstrap, Material Design)
+
+### Organisation des développements
+
+Pendant la réunion de travail du 29/01/2026 avec les principaux mainteneurs de GeoNature (Jacques Fize, Amandine Sahl, Camillle Monchicourt, Théo Lechemia), nous avons longement discuté sur ce qui pouvait être intégré au coeur de GeoNature ou développé dans un module à part. Voici donc dans les paragraphes suivants, l'arbitrage qui a été fait.
+
+#### Module individus
+
+Un nouveau module appelé `gn_individual` sera développé afin d'acueillir et gérer toutes les données spécifiques aux individus (hors observations occasionelles) :
+
+- La gestion des individus (CRUD),
+- Les CMR avec les notions de :
+  - captures
+  - équipement d'individus (marquages + balises), 
+  - biométrie et observations sur l'état physiologiques
+  - les prélèvements d'échantillons
+- La gestion des analyses faites en laboratoire (CRUD)
+- La gestion du matériel de suivi
+
+Ce choix de réaliser l'ensemble des développements dans un module à part permet :
+
+- De limiter l'impact sur le coeur et ainsi aussi la complexité des développement pour une équipe "junior" sur Geonature
+- De ne pas bloquer l'éuipe de dev par des discussions et validations régulières de la part des mainteneurs. L'équipe aura donc plus d'autonomie dans ses développements tant dans le contenu que dans la plannification.
+
+Le Parc national de la Vanoise souhaitant que les fonctionnalités soit le plus transversales possible, s'engage à régulièrement travailler avec les mainteneurs pour que le module puisse répondre aux besoins d'autres structures.
+
+#### Modifications dans le coeur
+
+##### Occtax
+
+Ces modifications seront relativements mineures si ce n'est, côté frontend, d'intégrer la possibilité de sélectionner un individus dans le dénombrement.
+
+Nous aurons donc comme modifications à apporter :
+
+- L'intégration de la notion d'individus au niveau du dénombrement. Cette modification demandera une réelle réflexion sur le frontend pour l'accès à cette fonctionnalité de façon fluide (UX).
+- La possibilité de rattacher un échantillon à une occurence
+- Ajout des notions d'interaction entre dénombrements
+
+##### Synthese
+
+Prise en compte des individus
+
+##### Common
+
+Gestion des échantillons en collaboration avec le projet du CBNA.
 
 ## Données concernées par le projet
 
@@ -107,7 +170,7 @@ Les données relatives aux individus devront être centralisées dans une base d
   - Localisation injection
   - Produit anesthésiant
   - Posologie
-  - Délais :	Type de délais (perte posture, coucher, sommeil, maîtrise, réaction capture, relevé tête, déplacement) + unité + valeur
+  - Délais : Type de délais (perte posture, coucher, sommeil, maîtrise, réaction capture, relevé tête, déplacement) + unité + valeur
   - Heure injection antidote
   - Produit antidote
   - Observations
@@ -117,6 +180,7 @@ Pour comprendre comment ont été implémentés ces champs en BDD, cf le tableau
 ### Les prélèvements d’échantillons
 
 Les prélèvements sont réalisés lors de capture ou lors d’une observation d'indices de présence.
+
 - Type de prélèvement (nomenclature : sang, carcasse, selles, urines, plumes, poils …)
 - Date de prélèvement
 - Identifiant
@@ -161,6 +225,7 @@ Pour comprendre comment ont été implémentés ces champs en BDD, cf le tableau
 ### Biométrie
 
 Cela concerne les données de biométrie réalisées lors des captures et recaptures.
+
 - Date des mesures
 - Mesures :
   - Localisation de la mesure sur l’animal (nomenclature)
@@ -181,19 +246,23 @@ Pour comprendre comment ont été implémentés ces champs en BDD, cf le tableau
 La liste suivante pourra évoluer dans le temps.
 
 Sérologie :
+
 - Virus recherchés :
   - Nom du virus (nomenclature)
   - Résultat
   
 Tests de gestation :
+
 - Type de dosage (nomenclature)
 - Valeurs
 
-Génétique
+Génétique :
+
 - Données relatives à l’empreinte génétique
 - Informations de filiation
 
-Autopsie
+Autopsie :
+
 - Date mort présumée
 - Etat cadavre (nomenclature)
 - Etat physiologique (doublon avec observation visuelles ?)
@@ -257,6 +326,8 @@ Pour comprendre comment ont été implémentés ces champs en BDD, cf le tableau
 Pour comprendre comment ont été implémentés ces champs en BDD, cf le tableau de correspondance suivant : [Données d'observation via capteur](#données-dobservation-via-capteur)
 
 ## Modèle de données relationnel
+
+Dans la présentation du modèle de données ci-après, nous nous efforçons d'expliquer la généricité des choix opérés.
 
 ### Individus
 
@@ -551,12 +622,12 @@ Exemple de structure du champ pour une analyse de type **Autopsie** :
 
 | Donnée initiale | Schéma / table | Champ | Explication |
 | :---- | :---- | :---- | :---- |
-| Identifiant de l'émetteur ou de la balise |  |  |  |
-| Individu |  |  |  |
-| Géolocalisation (point) |  |  |  |
+| Identifiant de l'émetteur ou de la balise | gn_monitoring.bib_tracking_material | id_tracking_material |  |
+| Individu | pr_occtax.cor_counting_occtax | id_individual |  |
+| Géolocalisation (point) | pr_occtax.t_releves_occtax | geom_local, geom_4326 |  |
 | Date + heure |  |  |  |
 | Température contre l'animal |  |  |  |
-|  Autres informations dépendantes des émetteurs |  |  |  |
+| Autres informations dépendantes des émetteurs |  |  |  |
 
 ### Données d'observation via piège photo
 
