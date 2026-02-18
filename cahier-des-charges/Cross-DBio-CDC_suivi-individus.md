@@ -401,7 +401,7 @@ Détail des champs
 
 *Shémas de liaison entre les tables t_samples et t_samples_analysis* :
 
-![Schéma t_sample_analysis](./images/analyses_des_echantillons.png) -->
+![Schéma t_sample_analysis](./images/analyses_des_echantillons.png)
 
 ### Captures et équipement d'individus
 
@@ -409,9 +409,9 @@ La notion de capture ne concerne que les individus. Nous souhaitons dissocier le
 
 Depuis la version 2.16.0 de GeoNature, il existe une table `gn_monitoring.t_marking_events` qui permet le stockage d’évènements de marquage pour le monitoring 
 
-*Ancien shémas de liaison entre les tables t_individuals et t_marking_events* :
+*Shémas de liaison entre les tables t_individuals et t_marking_events* :
 
-![Ancien schéma de t_individuals](./images/t_individual_old.png)
+![Schéma de données de t_individuals](./images/t_marking_events.png)
 
 Nous partirons sur un nouveau modèle de données pour la gestion des captures car la table `gn_monitoring.t_marking_events` ne répond aux besoins fonctionnels suivant :
 
