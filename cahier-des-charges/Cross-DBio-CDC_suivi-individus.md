@@ -29,7 +29,7 @@
     - [Individus](#individus)
     - [Interactions entre individus](#interactions-entre-individus)
     - [Echantillons](#echantillons)
-      - [Analyse des échantillons](#analyse-des-échantillons)
+    - [Analyse des échantillons](#analyse-des-échantillons)
     - [Captures et équipement d'individus](#captures-et-équipement-dindividus)
     - [Bibliothèque de matériel](#bibliothèque-de-matériel)
     - [Types de sujet d’observation](#types-de-sujet-dobservation)
@@ -335,14 +335,18 @@ Depuis la version 2.16.0 du cœur de geonature et de la version 1.1.0 du module 
 
 La modification du modèle de données proposée doit permettre d’associer un ou plusieurs individus à une observation occasionnelle.
 
-Ainsi pour la faune, le dénombrement rattaché à l'occurence (au taxon) pourra porté sur un ou plusieurs individus de l'espèce concernée : nous pouvons ainsi ajouter un champ `id_individual` à la table `pr_occtax.cor_couting_occtax` qui fera référence à la table des individus. Cette modification sera à répercuter dans la synthèse `gn_synthese.synthese`.
+Ainsi pour la faune, le dénombrement rattaché à l'occurence (au taxon) pourra porté sur un ou plusieurs individus de l'espèce concernée : nous pouvons ainsi ajouter un champ `id_individual` à la table `pr_occtax.t_releves_occtax` qui fera référence à la table des individus. Cette modification sera aussi à répercuter dans la table `gn_synthese.synthese`.
 
-<!-- 
-Rajouter :
-Détail des champs 
--->
+| Schéma | Tables modifiées |
+| :---- | :---- |
+| pr_occtax | t_releves_occtax |
+| gn_synthese | synthese |
 
-*Schéma de liaison entre les tables t_individuals et cor_counting_occtax* :
+| Champs ajoutés | Type | Contrainte | Détail |
+| :---- | :---- | :---- | :---- |
+| id_individual | INTEGER | FK | Identifiant d'un individu de la table gn_monitoring.t_individuals |
+
+*Schéma de liaison entre les tables `t_individuals`, `cor_counting_occtax` et `synthese`* :
 
 ![Schéma cor_counting_occtax / t_individuals](./images/gestion_individus.png)
 
@@ -352,14 +356,20 @@ Pour le suivi des populations, la notion d'interaction entre individus peut-êtr
 
 L'interaction peut aussi, par exemple, être intéressante à relever entre un invertébré et son hôte.
 
-La notion d'interaction entre individus étant générique nous créons donc une table permettant la qualification d'une interaction entre 2 entrées de la table `cor_counting_occtax`.
+La notion d'interaction entre individus étant générique nous créons donc une table `t_interaction_occtax` permettant la qualification d'une interaction entre 2 entrées de la table `cor_counting_occtax`, c'est à dire entre 2 occurences (indépendament du taxon) d'un même relevé :
 
-<!-- 
-Rajouter :
-Détail des champs 
--->
+| Schéma | Table créée |
+| :---- | :---- |
+| pr_occtax | t_interaction_occtax |
 
-*Shéma de liaison entre les tables t_interaction_occtax et cor_counting_occtax* :
+| Champ | Type | Contrainte | Détail |
+| :---- | :---- | :---- | :---- |
+| id_interaction | BIGINT | PK, NOT NULL | Identifiant unique de l'intéraction |
+| id_counting_occtax_1 | BIGINT | FK, NOT NULL | Identifiant de la 1ère occurence de la table cor_counting_occtax.id_counting_occtax concernée par l'interaction |
+| id_counting_occtax_2 | BIGINT | FK, NOT NULL | Identifiant de la 2nd occurence de la table cor_counting_occtax.id_counting_occtax concernée par l'interaction |
+| id_nomenclature_interaction_type | INTEGER | FK, NOT NULL, CHECK | Identifiant du type d'intéraction de la table ref_nomenclatures.t_nomenclatures |
+
+*Shéma de liaison entre les tables `t_interaction_occtax` et `cor_counting_occtax`* :
 
 ![Schéma t_interaction_occtax](./images/interaction.png)
 
@@ -373,22 +383,36 @@ Des échantillons peuvent être collectés sur le terrain dans différents conte
 
 Notre modèle doit satisfaire tout ces cas d'usage. A la lecture du travail porté par le CBNA (issue [#3603](https://github.com/PnX-SI/GeoNature/issues/3603)), nous repartirons de leurs réflexions pour implémenter notre besoin. Ce modèle permet d’associer un échantillon `gn_common.t_collection_sample` à tout type d'objet via les champs `id_table_location` et `uuid_attached_row`.
 
-*Extrait du cahier des charges 'Relevés floristiques et phytosociologiques' du CBNA'* :
+*Extrait du cahier des charges 'Relevés floristiques et phytosociologiques' du CBNA* :
 
 ![Schéma t_samples](./images/cdc_cbna_echantillons_mcd.png)
   
 Nous renommerons par contre la table `t_collection_sample` en `t_samples` car son usage se fera au dela de la notion de collections.
 
-<!-- 
-Rajouter :
-Détail des champs 
--->
+
+| Schéma | Tables créée |
+| :---- | :---- |
+| gn_common | t_samples |
+
+| Champs | Type | Contrainte | Détail |
+| :---- | :---- | :---- | :---- |
+| id_sample | BIGINT | PK |  |
+| unique_id_sample | UUID |  |  |
+| id_nomenclature_sample_type | INTEGER | PK, NOT NULL |  |
+| id_table_location | INTEGER |  | gn_common.bib_table_location |
+| uuid_attached_row | UUID |  |  |
+| id_collection | INTEGER |  |  |
+| code | VARCHAR(50) |  |  |
+| comment | TEXT |  |  |
+| id_digitiser | INTEGER |  |  |
+| meta_create_date | DATE | NOT NULL |  |
+| meta_update_date | DATE |  |  |
 
 *Shéma de la table t_samples* :
 
 ![Schéma t_samples](./images/echantillons.png)
 
-#### Analyse des échantillons
+### Analyse des échantillons
 
 Aujourd'hui, au Parc national de la Vanoise, les résultats d'analyses sont, pour la plus part, compilés dans un fichier xsl. Dans d'autres structures, ces fiches sont très souvant classées sous forme papier et/ou numérisées en format pdf.
 
@@ -407,7 +431,7 @@ Détail des champs
 
 La notion de capture ne concerne que les individus. Nous souhaitons dissocier les informations liées directement à la capture, des informations concernant la mise en place d'équipement sur les individus.
 
-Depuis la version 2.16.0 de GeoNature, il existe une table `gn_monitoring.t_marking_events` qui permet le stockage d’évènements de marquage pour le monitoring 
+Depuis la version 2.16.0 de GeoNature, il existe une table `gn_monitoring.t_marking_events` qui permet le stockage d’évènements de marquage pour le monitoring :
 
 *Shémas de liaison entre les tables t_individuals et t_marking_events* :
 

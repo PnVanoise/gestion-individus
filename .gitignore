@@ -1,6 +1,7 @@
 etat-des-lieux/*
 !etat-des-lieux/*.docx
 
+donnees-OFB
 
 # Tout ignorer dans cahier-des-charges
 cahier-des-charges/*
