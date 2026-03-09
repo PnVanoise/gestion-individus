@@ -27,12 +27,23 @@
     - [Observation via piège photo](#observation-via-piège-photo)
   - [Modèle de données relationnel](#modèle-de-données-relationnel)
     - [Individus](#individus)
+      - [`pr_occtax.t_releves_occtax`](#pr_occtaxt_releves_occtax)
+      - [`gn_synthese.synthese`](#gn_synthesesynthese)
     - [Interactions entre individus](#interactions-entre-individus)
+      - [`pr_occtax.t_interaction_occtax`](#pr_occtaxt_interaction_occtax)
     - [Echantillons](#echantillons)
+      - [`gn_common.t_samples`](#gn_commont_samples)
     - [Analyse des échantillons](#analyse-des-échantillons)
+      - [`gn_individual.t_samples_analysis`](#gn_individualt_samples_analysis)
+      - [`gn_individual.bib_laboratories`](#gn_individualbib_laboratories)
     - [Captures et équipement d'individus](#captures-et-équipement-dindividus)
+      - [`gn_individual.t_captures`](#gn_individualt_captures)
+      - [`gn_individual.t_individual_capture_reports`](#gn_individualt_individual_capture_reports)
+      - [`gn_individual.cor_role_captures`](#gn_individualcor_role_captures)
+      - [`gn_individual.t_individual_deployments`](#gn_individualt_individual_deployments)
     - [Bibliothèque de matériel](#bibliothèque-de-matériel)
-    - [Types de sujet d’observation](#types-de-sujet-dobservation)
+      - [`gn_individual.bib_tracking_device`](#gn_individualbib_tracking_device)
+    - [Observations faites par des dispositifs de suivi](#observations-faites-par-des-dispositifs-de-suivi)
     - [Modèle de données complet](#modèle-de-données-complet)
   - [Mise en relation avec le besoin initial](#mise-en-relation-avec-le-besoin-initial)
     - [Données de capture](#données-de-capture)
@@ -337,18 +348,21 @@ La modification du modèle de données proposée doit permettre d’associer un 
 
 Ainsi pour la faune, le dénombrement rattaché à l'occurence (au taxon) pourra porté sur un ou plusieurs individus de l'espèce concernée : nous pouvons ainsi ajouter un champ `id_individual` à la table `pr_occtax.t_releves_occtax` qui fera référence à la table des individus. Cette modification sera aussi à répercuter dans la table `gn_synthese.synthese`.
 
-| Schéma | Tables modifiées |
-| :---- | :---- |
-| pr_occtax | t_releves_occtax |
-| gn_synthese | synthese |
+*Schéma de liaison entre les tables `gn_monitoring.t_individuals`, `pr_occtax.cor_counting_occtax` et `gn_synthese.synthese`* :
+
+![Schéma cor_counting_occtax / t_individuals / synthese](./images/gestion_individus.png)
+
+#### `pr_occtax.t_releves_occtax`
 
 | Champs ajoutés | Type | Contrainte | Détail |
 | :---- | :---- | :---- | :---- |
 | id_individual | INTEGER | FK | Identifiant d'un individu de la table gn_monitoring.t_individuals |
 
-*Schéma de liaison entre les tables `t_individuals`, `cor_counting_occtax` et `synthese`* :
+#### `gn_synthese.synthese`
 
-![Schéma cor_counting_occtax / t_individuals](./images/gestion_individus.png)
+| Champs ajoutés | Type | Contrainte | Détail |
+| :---- | :---- | :---- | :---- |
+| id_individual | INTEGER | FK | Identifiant d'un individu de la table gn_monitoring.t_individuals |
 
 ### Interactions entre individus
 
@@ -356,22 +370,22 @@ Pour le suivi des populations, la notion d'interaction entre individus peut-êtr
 
 L'interaction peut aussi, par exemple, être intéressante à relever entre un invertébré et son hôte.
 
-La notion d'interaction entre individus étant générique nous créons donc une table `t_interaction_occtax` permettant la qualification d'une interaction entre 2 entrées de la table `cor_counting_occtax`, c'est à dire entre 2 occurences (indépendament du taxon) d'un même relevé :
+La notion d'interaction entre individus étant générique nous créons donc une table `pr_occtax.t_interaction_occtax` permettant de caractériser l'interaction entre 2 entrées de la table `pr_occtax.cor_counting_occtax`, c'est à dire entre 2 occurences (indépendament du taxon) d'un même relevé :
 
-| Schéma | Table créée |
-| :---- | :---- |
-| pr_occtax | t_interaction_occtax |
+*Shéma de liaison entre les tables `pr_occtax.t_interaction_occtax` et `pr_occtax.cor_counting_occtax`* :
+
+![Schéma t_interaction_occtax](./images/interaction.png)
+
+#### `pr_occtax.t_interaction_occtax`
+
+Table permettant de caractériser l'interaction entre 2 occurances de taxon.
 
 | Champ | Type | Contrainte | Détail |
 | :---- | :---- | :---- | :---- |
 | id_interaction | BIGINT | PK, NOT NULL | Identifiant unique de l'intéraction |
-| id_counting_occtax_1 | BIGINT | FK, NOT NULL | Identifiant de la 1ère occurence de la table cor_counting_occtax.id_counting_occtax concernée par l'interaction |
-| id_counting_occtax_2 | BIGINT | FK, NOT NULL | Identifiant de la 2nd occurence de la table cor_counting_occtax.id_counting_occtax concernée par l'interaction |
-| id_nomenclature_interaction_type | INTEGER | FK, NOT NULL, CHECK | Identifiant du type d'intéraction de la table ref_nomenclatures.t_nomenclatures |
-
-*Shéma de liaison entre les tables `t_interaction_occtax` et `cor_counting_occtax`* :
-
-![Schéma t_interaction_occtax](./images/interaction.png)
+| id_counting_occtax_1 | BIGINT | FK, NOT NULL | Identifiant de la 1ère occurence concernée par l'interaction lié au champ `id_counting_occtax` de la table `cor_counting_occtax` |
+| id_counting_occtax_2 | BIGINT | FK, NOT NULL | Identifiant de la 2nd occurence concernée par l'interaction lié au champ `id_counting_occtax` de la table `cor_counting_occtax` |
+| id_nomenclature_interaction_type | INTEGER | FK, NOT NULL, CHECK | Identifiant du type d'intéraction lié au champ `id_nomenclature` de la table `ref_nomenclatures.t_nomenclatures` |
 
 ### Echantillons
 
@@ -385,110 +399,198 @@ Notre modèle doit satisfaire tout ces cas d'usage. A la lecture du travail port
 
 *Extrait du cahier des charges 'Relevés floristiques et phytosociologiques' du CBNA* :
 
-![Schéma t_samples](./images/cdc_cbna_echantillons_mcd.png)
+![Schéma t_collection_sample du CBNA](./images/cdc_cbna_echantillons_mcd.png)
   
-Nous renommerons par contre la table `t_collection_sample` en `t_samples` car son usage se fera au dela de la notion de collections.
+Nous nommerons la table de stockage des échantillons `gn_common.t_samples` (et non `gn_common.t_collection_sample`) car son usage se fera au dela de la notion de collection.
 
+*Shéma de la table `gn_common.t_samples`* :
 
-| Schéma | Tables créée |
-| :---- | :---- |
-| gn_common | t_samples |
+![Schéma t_samples](./images/echantillons.png)
+
+#### `gn_common.t_samples`
+
+Table stockant les informations sur les échantillons prélevés sur le terrain.
 
 | Champs | Type | Contrainte | Détail |
 | :---- | :---- | :---- | :---- |
-| id_sample | BIGINT | PK |  |
-| unique_id_sample | UUID |  |  |
-| id_nomenclature_sample_type | INTEGER | PK, NOT NULL |  |
-| id_table_location | INTEGER |  | gn_common.bib_table_location |
-| uuid_attached_row | UUID |  |  |
-| id_collection | INTEGER |  |  |
-| code | VARCHAR(50) |  |  |
-| comment | TEXT |  |  |
-| id_digitiser | INTEGER |  |  |
-| meta_create_date | DATE | NOT NULL |  |
-| meta_update_date | DATE |  |  |
-
-*Shéma de la table t_samples* :
-
-![Schéma t_samples](./images/echantillons.png)
+| id_sample | BIGINT | PK, NOT NULL | Identifiant unique de l'échantillon |
+| unique_id_sample | UUID | NOT NULL | Identifiant unique et universel de l'échantillon. Utilisé lors de transmission des données à d'autres établissement afin d'éviter les doublons. |
+| id_nomenclature_sample_type | INTEGER | PK, NOT NULL | Identitifiant du type d'échantillon récolté (ex : cadavre, crottes, plantes, terre) lié au champ `id_nomenclature` de la table `ref_nomenclatures.t_nomenclatures` |
+| id_table_location | INTEGER | FK | Identifiant de la table à laquelle est rattaché cet échantillon lié au champ `id_table_location`de la table `gn_common.bib_table_location`. Cette méthode reprend ce qui a été fait pour la gestion des médias qui peuvent être associés à toute entrée d'un table disposant d'un uuid. |
+| uuid_attached_row | UUID | - | Ce champ est étroitement lié à l'id_table_location. Cet uuid est celui de l'entrée de la table mentionnée via le id_location_table. |
+| comment | TEXT | - | Champ de commentaires |
+| id_digitiser | INTEGER | FK, NOT NULL | Identifiant de la personne ayant saisi l'enregistrement, lié au champ `id_role` de la table `utilisateurs.t_roles` |
+| meta_create_date | DATE | NOT NULL | Date de création de l'enregistrement |
+| meta_update_date | DATE | - | Date de la dernière mise à jour de l'enregistrement |
 
 ### Analyse des échantillons
 
 Aujourd'hui, au Parc national de la Vanoise, les résultats d'analyses sont, pour la plus part, compilés dans un fichier xsl. Dans d'autres structures, ces fiches sont très souvant classées sous forme papier et/ou numérisées en format pdf.
 
-Le projet est de faciliter l'exploitation des données en enregistrant ces fiches dans une table unique dont la plupart des champs seront configurables via un champ de type JSON `additional_data` de la table `gn_commons.t_sample_analysis`.
+Le projet est de faciliter l'exploitation des données en enregistrant ces fiches dans une table unique dont la plupart des champs seront configurables via le champ json `additional_data` de la table `gn_individual.t_sample_analysis`.
 
-<!-- 
-Rajouter :
-Détail des champs 
--->
+La bibliothèque `gn_individual.bib_laboratories` permettra de stocker de façon propre les noms des laboratoires d'analyse.
 
-*Shémas de liaison entre les tables t_samples et t_samples_analysis* :
+*Shémas de liaison entre les tables `gn_common.t_samples`, `gn_individual.t_samples_analysis` et `gn_individual.bib_laboratories`* :
 
 ![Schéma t_sample_analysis](./images/analyses_des_echantillons.png)
 
+#### `gn_individual.t_samples_analysis`
+
+Table de stockage des résultats d'analyses en provenane de laboratoires.
+
+| Champs | Type | Contrainte | Détail |
+| :---- | :---- | :---- | :---- |
+| id_analysis | BIGINT | PK | Identifiant unique de l'analyse |
+| id_sample | BIGINT | FK, NOT NULL | Identifiant de l'échantillon concerné par l'analyse pointant vers gn_commons.t_samples |
+| id_nomenclature_analysis_type | INTEGER | FK, NOT NULL, CHECK | Identifiant du type d'analyse (ex : génétique, sérologie, ...) lié au champ `id_nomenclature` de la table `ref_nomenclatures.t_nomenclatures` |
+| id_laboratory  | INTEGER | FK, NOT NULL | Identifiant du la boratoire e ncharge de l'analyse lié au champs `id_laboratory` de la table `bib_laboratories` |
+| sample_receipt_date | DATE | NOT NULL | Date de réception de l'échantillon au laboratoire |
+| labo_analysis_ref | VARCHAR(100) | NOT NULL | Identifiant de l'analyse au seinb du laboratoire |
+| comment | TEXT | - | Commentaires |
+| additional_data | JSONB | - | Données non génériques associées à l'analyse : les résulstats d'analyse, très différents d'un type d'analyse à un autre seront stockés ici |
+| id_digitiser | INTEGER | FK, NOT NULL | Identifiant de la personne ayant saisi l'enregistrement, lié au champ `id_role` de la table `utilisateurs.t_roles` |
+| meta_create_date | DATE | NOT NULL | Date de création de l'enregistrement |
+| meta_update_date | DATE | - | Date de la dernière mise à jour de l'enregistrement |
+
+#### `gn_individual.bib_laboratories`
+
+Bibliothèque listant les laboratoires d'analyses.
+
+| Champs | Type | Contrainte | Détail |
+| :---- | :---- | :---- | :---- |
+| id_laboratory | INTEGER | PK | Identifiant unique du laboratoire |
+| name | TEXT | NOT NULL | Nom complet du laboratoire |
+| city | TEXT | NOT NULL | Nom de la ville où est implanté le laboratoire |
+| comment | TEXT | - | Commentaires |
+| id_digitiser | INTEGER | FK, NOT NULL | Identifiant de la personne ayant saisi l'enregistrement, lié au champ `id_role` de la table `utilisateurs.t_roles` |
+| meta_create_date | DATE | NOT NULL | Date de création de l'enregistrement |
+| meta_update_date | DATE | - | Date de la dernière mise à jour de l'enregistrement |
+
 ### Captures et équipement d'individus
 
-La notion de capture ne concerne que les individus. Nous souhaitons dissocier les informations liées directement à la capture, des informations concernant la mise en place d'équipement sur les individus.
+La notion de capture ne concerne que les individus. Nous souhaitons dissocier les informations :
+
+- liées directement à la capture,
+- concernant la mise en place d'équipements (marquages, balises ...) sur les individus,
+- concernant les constats faits sur l'individu lors de la capture
 
 Depuis la version 2.16.0 de GeoNature, il existe une table `gn_monitoring.t_marking_events` qui permet le stockage d’évènements de marquage pour le monitoring :
 
-*Shémas de liaison entre les tables t_individuals et t_marking_events* :
+*Shémas de liaison entre les tables `gn_monitoring.t_individuals` et `gn_monitoring.t_marking_events`* :
 
 ![Schéma de données de t_individuals](./images/t_marking_events.png)
 
-Nous partirons sur un nouveau modèle de données pour la gestion des captures car la table `gn_monitoring.t_marking_events` ne répond aux besoins fonctionnels suivant :
+Nous faisons le choix de partir sur un nouveau modèle de données pour la gestion des captures car la table `gn_monitoring.t_marking_events` ne répond aux besoins fonctionnels suivant :
 
-- de définir plusieurs marquages ou balises par individu. Nous passerons alors par les nouvelles tables `t_individual_deployments` et `bib_tracking_device`. Son modèle permet d'accuillir la nouvelle génération de collier GPS faisant office de marquage et de balise.
-- d'associer plusieurs individus à un même évènement de capture. Nous passerons alors par la nouvelle table `t_captures`.
-- d'associer plusieurs opérateurs à une capture. Nous réaliserons cela via la nouvelle table de correspondance `cor_role_captures`.
-
-<!-- 
-Rajouter :
-Détail des champs 
--->
+- d'associer plusieurs individus à un même évènement de capture. Nous créons pour cela la table `gn_individual.t_captures`.
+- d'associer plusieurs opérateurs à une capture. Nous réaliserons cela via la nouvelle table de correspondance `gn_individual.cor_role_captures`.
+- de définir plusieurs marquages ou balises par individu. Nous passerons alors par la création
+  - de la table`gn_inidvidual.t_individual_deployments` pour la gestion des équipements par capture et par individu. Son modèle permet d'accuillir la nouvelle génération de collier GPS faisant office de marquage et de balise,
+  - de la table `gn_inidvidual.bib_tracking_device` pour l'enregistrement des balises disponibles pour l'équipement des individus.
+- d'associer un état des lieux/constat (état physiologique de l'animal, biométrie, déroulement de l'anesthésie, ...) sur un individu pour un capture donnée. Nous créons pour cela la table `gn_individual.t_individual_capture_reports`.
 
 *Schéma des tables associées à un évènement de capture* :
 
-![Schéma t_captures, t_individual_deployments et autres](./images/deploiements.png) -->
+![Schéma des tables associées à un évènement de capture](./images/capture.png)
+
+#### `gn_individual.t_captures`
+
+Table stockant l'évènement de capture de la faune sauvage.
+
+| Champs | Type | Contrainte | Détail |
+| :---- | :---- | :---- | :---- |
+| id_capture | INTEGER | PK | Identifiant unique de la capture |
+| id_nomenclature_capture_protocol | INTEGER | FK, NOT NULL, CHECK | Identifiant du type de protocole de capture (ex : fusil, cage, filet, ...) lié au champ `id_nomenclature` de la table `ref_nomenclatures.t_nomenclatures` |
+| comment | TEXT | - | Commentaires |
+| date | DATE | NOT NULL | Date de la capture |
+| geom_local | GEOMETRY | CHECK | Géométrie permettant de localiser la capture. Celle-ci est calculée à partir du champ `geom_4326` |
+| geom_4326 | GEOMETRY | NOT NULL, CHECK | Géométrie permettant de localiser la capture. |
+| additional_data | JSONB | - | Données non génériques associées à la capture. Ex : lieu-dit |
+| id_digitiser | INTEGER | FK, NOT NULL | Identifiant de la personne ayant saisi l'enregistrement, lié au champ `id_role` de la table `utilisateurs.t_roles` |
+| meta_create_date | DATE | NOT NULL | Date de création de l'enregistrement |
+| meta_update_date | DATE | - | Date de la dernière mise à jour de l'enregistrement |
+
+#### `gn_individual.t_individual_capture_reports`
+
+Table stockant l'état des lieux/le constat fait sur un individu lors de la capture.
+
+| Champs | Type | Contrainte | Détail |
+| :---- | :---- | :---- | :---- |
+| id_report | INTEGER | PK | Identifiant unique du constat |
+| id_capture | INTEGER | FK, NOT NULL | Identifiant unique de la capture relié au champ `id_capture` de la table `gn_individual.t_captures` |
+| id_individual | INTEGER | FK, NOT NULL | Identifiant unique de l'individu concerné par le constat relié au champ `id_individual` de la table `gn_monitoring.t_individuals` |
+| additional_data | JSONB | - | Données non génériques de constat. Ex : température corporelle, biométrie ... |
+
+#### `gn_individual.cor_role_captures`
+
+Table de correspondance (relation n-n) entre les rôles (opérateurs) et les captures.
+
+| Champs | Type | Contrainte | Détail |
+| :---- | :---- | :---- | :---- |
+| id_role | INTEGER | PK | Identifiant du rôle ayant contribué à la capture, lié au champ `id_role` de la table `utilisateurs.t_role` |
+| id_capture | INTEGER | PK | Identifiant de la capture, lié au champ `id_capture` de la table `gn_individual.t_captures` |
+
+#### `gn_individual.t_individual_deployments`
+
+Table des déploiements d'équipements (dispositifs de suivi, marquage) sur un individu lors d'une capture.
+
+| Champs | Type | Contrainte | Détail |
+| :---- | :---- | :---- | :---- |
+| id_deployment | INTEGER | PK | Identifiant unique du déploiement |
+| id_capture | INTEGER | FK, NOT NULL | Identifiant de la capture lors de laquelle a été réalisé le déploiement, lié au champ `id_capture` de la table `gn_individual.t_captures` |
+| id_individual | INTEGER | FK, NOT NULL | Identifiant de l'individu concerné par le déploiement, lié au champ `id_individual` de la table `gn_monitoring.t_individuals` |
+| id_nomenclature_deployment_type | INTEGER | FK, NOT NULL, CHECK | Identifiant du type de déploiement (ex : boucle, collier, décoloration, peinture, dispositif de suivi) lié au champ `id_nomenclature` de la table `ref_nomenclatures.t_nomenclatures` |
+| id_nomenclature_deployment_location | INTEGER | FK, NOT NULL, CHECK | Identifiant du lieu du déploiement (ex : oreille droite, encolure, aile gauche, carapasse ...) lié au champ `id_nomenclature` de la table `ref_nomenclatures.t_nomenclatures` |
+| id_tracking_device | INTEGER | FK | Identifiant du dispositif de suivi déployé sur l'individu, lié au champ `id_tracking_device` de la table `gn_monitoring.bib_tracking_device` |
+| marking_code | VARCHAR(100) | - | Caractéristique du marquage (ex : lettre, couleur, nom de la plûme décolorée ...) |
+| setting_up_date | DATE | NOT NULL | Date de mise en place de l'équipement (marquage ou dispositif de suivi). |
+| removal_date | DATE | - | Date de retrait de l'équipement (marquage ou dispositif de suivi). |
+| comment | TEXT | - | Commentaires |
+| additional_data | JSONB | - | Données non génériques associées au déploiement. Ex : lieu-dit |
+| id_digitiser | INTEGER | FK, NOT NULL | Identifiant de la personne ayant saisi l'enregistrement, lié au champ `id_role` de la table `utilisateurs.t_roles` |
+| meta_create_date | DATE | NOT NULL | Date de création de l'enregistrement |
+| meta_update_date | DATE | - | Date de la dernière mise à jour de l'enregistrement |
 
 ### Bibliothèque de matériel
 
-La bibiothèque `gn_monitoring.bib_tracking_material` permet de recenser les différents matériels de suivi : pièges photos, colliers GPS ...
+La bibiothèque `gn_monitoring.bib_tracking_device` permet de recenser les différents matériels de suivi : pièges photos, colliers GPS ...
 
 Cette table permet d'associer une balise lors de l'équipement d'un individu, ou bien de définir un piège photo spécifique ou une balise spécifique comme role pour un relevé.  
-
-<!-- 
-Rajouter :
-Détail des champs 
--->
 
 *Shéma de la table bib_tracking_device* :
 
 ![Schéma bib_tracking_device](./images/materiel.png)
 
-### Types de sujet d’observation
+#### `gn_individual.bib_tracking_device`
 
-Au regard de notre souhait de stocker toutes nos données d'observation dans GeoNature, nous devons avoir la possibliter d'enregistrée toutes les "observations" réalisées par des émetteurs type GPS ou par des capteurs de type piège photo.
+Bibiothèque pour le gestion des dispositifs de suivi.
 
-Nous avons fait le choix avec l'équipe des mainteneurs de Geonature de ne pas toucher à la gestion des rôles de GeoNature. Nous créérons un unique rôle de type "machine" qui sera le rôle associé aux relevés de ce type.
+| Champs | Type | Contrainte | Détail |
+| :---- | :---- | :---- | :---- |
+| id_tracking_device | INTEGER | PK | Identifiant unique du dispositif de suivi |
+| id_nomenclature_device_type | INTEGER | FK, NOT NULL, CHECK | Identifiant type de dispositif (ex : balise GPS, balise ARGOS, piège photo ...) lié au champ `id_nomenclature` de la table `ref_nomenclatures.t_nomenclatures` |
+| id_referer | INTEGER | FK, NOT NULL | Identifiant de la personne responsable du matériel, lié au champ `id_role` de la table `utilisateurs.t_roles` |
+| provider_name | VARCHAR(50) | - | Nom du fournisseur |
+| provider_device_id | VARCHAR(50) | - | Identifiant du dispositif de suivi chez le fournisseur  |
+| comment | TEXT | - | Commentaires |
+| id_digitiser | INTEGER | FK, NOT NULL | Identifiant de la personne ayant saisi l'enregistrement, lié au champ `id_role` de la table `utilisateurs.t_roles` |
+| meta_create_date | DATE | NOT NULL | Date de création de l'enregistrement |
+| meta_update_date | DATE | - | Date de la dernière mise à jour de l'enregistrement |
 
-Afin de pouvoir identifier quel est le capteur ou émetteur qui a "produit" la donnée, nous ajouterons un champ additionnel "id_tracking_device" dans le champ `additional_fields` de la table `pr_occtax.t_releves_occtax`. Parallèlement, ces relevés seront associés à des jeux de données spécifiques.
+### Observations faites par des dispositifs de suivi
 
-*Shéma de la table t_releves_occtax* :
+Au regard de notre souhait de stocker toutes nos données d'observation dans GeoNature, nous devons avoir la possibliter d'enregistrée toutes les "observations" réalisées par des dispositifs de suivi, type balises GPS ou pièges photo.
 
-![Schéma t_releves_occtax](./images/releves_occtax.png)
+Nous faisons le choix, conseillés par l'équipe des mainteneurs de GeoNature, de créer pour cela un rôle dédié à ce type d'observations qui pourrait se nommer "Dispositif de suivi".
 
-<!-- 
-Rajouter :
-Détail des champs 
--->
+Afin de pouvoir identifier quel est le capteur ou émetteur qui a "produit" la donnée, nous ajouterons un champ additionnel "id_tracking_device" dans le champ `additional_fields` de la table `pr_occtax.t_releves_occtax` via le module de gestion des champs additionnels.
+
+Ces relevés seront associés à des jeux de données spécifiques.
 
 ### Modèle de données complet
 
 Le modèle de données, ci-dessous, ne reprends pas l'ensemble du modèle de Géonature. Il ne présente que les nouvelles tables créées pour le projet (en orange) ainsi que les tables du modèle actuel qui leur sont liées (en vert) et sont nécessaires à la compréhension du modèle. Les champs créés dans des tables existantes sont surlignés en orange. Les tables en violet appartiennent à une autre BDD.
-
-<!-- Mettre à jour -->
 
 ![Schéma complet](./images/mcd.png)
 
@@ -505,16 +607,16 @@ Via les tableaux de correspondance suivant, nous validons que l'ensemble des don
 | Lieu-dit | gn_individual.t_captures | additional_data | |
 | Date de capture | gn_individual.t_captures | date | |
 | Type de capture | gn_individual.t_captures | id_nomenclature_capture_protocol | |
-| Température | gn_individual.t_individual_deployments | additional_data | `{[...],"temperature": "000"}` |
-| Poids | gn_individual.t_individual_deployments | additional_data | `{[...],"weight": "000"}` |
-| Rythme cardiaque | gn_individual.t_individual_deployments | additional_data | `{[...],"heart_rate": "000"}` |
-| Echographie | gn_individual.t_individual_deployments | additional_data | `{[...],"pregnant": "yes/no"}` |
-| Anesthésie : Nombre de tirs | gn_individual.t_individual_deployments | comment | |
-| Anesthésie : Distance tir | gn_individual.t_individual_deployments | comment | |
-| Anesthésie injection : Heure, localisation, nom produit, posologie | gn_individual.t_individual_deployments | additional_data | `{[...],"anesthesia_injection":{"hour": "000","location": "xxx","product": "xxx","dosage": "xxx"}}` |
-| Anesthésie réactions (x n): Type, unité, valeur | gn_individual.t_individual_deployments | additional_data | `{[...],"anesthesia_reaction":{"1":{"type": "xxx","delai": "000"},"2":{"type": "xxx","delai": "000"}}}` |
-| Antidote : Heure injection, produit, posologie | gn_individual.t_individual_deployments | additional_data | `{[...],"antidote_injection":{"hour": "000","location": "xxx","product": "xxx","dosage": "xxx"}}` |
-| Anesthésie : Observations | gn_individual.t_individual_deployments | comment | |
+| Température | gn_individual.t_individual_capture_reports | additional_data | `{[...],"temperature": "000"}` |
+| Poids | gn_individual.t_individual_capture_reports | additional_data | `{[...],"weight": "000"}` |
+| Rythme cardiaque | gn_individual.t_individual_capture_reports | additional_data | `{[...],"heart_rate": "000"}` |
+| Echographie | gn_individual.t_individual_capture_reports | additional_data | `{[...],"pregnant": "yes/no"}` |
+| Anesthésie : Nombre de tirs | gn_individual.t_individual_capture_reports | comment | |
+| Anesthésie : Distance tir | gn_individual.t_individual_capture_reports | comment | |
+| Anesthésie injection : Heure, localisation, nom produit, posologie | gn_individual.t_individual_capture_reports | additional_data | `{[...],"anesthesia_injection":{"hour": "000","location": "xxx","product": "xxx","dosage": "xxx"}}` |
+| Anesthésie réactions (x n): Type, unité, valeur | gn_individual.t_individual_capture_reports | additional_data | `{[...],"anesthesia_reaction":{"1":{"type": "xxx","delai": "000"},"2":{"type": "xxx","delai": "000"}}}` |
+| Antidote : Heure injection, produit, posologie | gn_individual.t_individual_capture_reports | additional_data | `{[...],"antidote_injection":{"hour": "000","location": "xxx","product": "xxx","dosage": "xxx"}}` |
+| Anesthésie : Observations | gn_individual.t_individual_capture_reports | comment | |
 
 ### Données de prélèvements d’échantillons
 
@@ -560,16 +662,16 @@ Via les tableaux de correspondance suivant, nous validons que l'ensemble des don
 | Donnée initiale | Schéma / table | Champ | Explication |
 | :---- | :---- | :---- | :---- |
 | Date des mesures | pr_occtax.t_releves_occtax | date_min |  |
-| Mesures : Localisation sur l’animal, mesure, unité de mesure | gn_individual.t_individual_deployments | additional_data | `{[...],"measures":{"m1": {"value": "000","unit": "xxx"},"m2": {"value": "000","unit": "xxx"}, [...]}}` |
+| Mesures : Localisation sur l’animal, mesure, unité de mesure | gn_individual.t_individual_capture_reports | additional_data | `{[...],"measures":{"m1": {"value": "000","unit": "xxx"},"m2": {"value": "000","unit": "xxx"}, [...]}}` |
 
 ### Données sur les résultats d'analyses d'échantillons effectuées en laboratoire
 
 | Donnée initiale | Schéma / table | Champ | Explication |
 | :---- | :---- | :---- | :---- |
 | Type d’analyse | gn_individual.t_sample_analysis | id_nomenclature_analysis_type | |
-| Date de réception au laboratoire | gn_individual.t_sample_analysis | labo_receipt_date | |
-| Nom du laboratoire | gn_individual.t_sample_analysis.t_sample_analysis | id_nomenclature_labo_name | |
-| Référence dues résultats transmis par le laboratoire | gn_individual.t_sample_analysis.t_sample_analysis | labo_analysis_ref | |
+| Date de réception au laboratoire | gn_individual.t_sample_analysis | sample_receipt_date | |
+| Nom du laboratoire | gn_individual.bib_laboratories | name | |
+| Référence dues résultats transmis par le laboratoire | gn_individual.t_sample_analysis | labo_analysis_ref | |
 | Mode de conservation de l’échantillon | gn_common.t_samples | comment | |
 | Remarques | gn_individual.t_sample_analysis | comment | |
 
