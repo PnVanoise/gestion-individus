@@ -511,13 +511,13 @@ Table stockant l'évènement de capture de la faune sauvage.
 | meta_create_date | DATE | NOT NULL | Date de création de l'enregistrement |
 | meta_update_date | DATE | - | Date de la dernière mise à jour de l'enregistrement |
 
-#### `gn_individual.t_individual_capture_reports`
+#### `gn_individual.t_individual_capture_observations`
 
 Table stockant l'état des lieux/le constat fait sur un individu lors de la capture.
 
 | Champs | Type | Contrainte | Détail |
 | :---- | :---- | :---- | :---- |
-| id_report | INTEGER | PK | Identifiant unique du constat |
+| id_observation | INTEGER | PK | Identifiant unique du constat |
 | id_capture | INTEGER | FK, NOT NULL | Identifiant unique de la capture relié au champ `id_capture` de la table `gn_individual.t_captures` |
 | id_individual | INTEGER | FK, NOT NULL | Identifiant unique de l'individu concerné par le constat relié au champ `id_individual` de la table `gn_monitoring.t_individuals` |
 | additional_data | JSONB | - | Données non génériques de constat. Ex : température corporelle, biométrie ... |
