@@ -38,11 +38,11 @@
       - [`gn_individual.bib_laboratories`](#gn_individualbib_laboratories)
     - [Captures et équipement d'individus](#captures-et-équipement-dindividus)
       - [`gn_individual.t_captures`](#gn_individualt_captures)
-      - [`gn_individual.t_individual_capture_reports`](#gn_individualt_individual_capture_reports)
+      - [`gn_individual.t_individual_capture_observations`](#gn_individualt_individual_capture_observations)
       - [`gn_individual.cor_role_captures`](#gn_individualcor_role_captures)
       - [`gn_individual.t_individual_deployments`](#gn_individualt_individual_deployments)
     - [Bibliothèque de matériel](#bibliothèque-de-matériel)
-      - [`gn_individual.bib_tracking_device`](#gn_individualbib_tracking_device)
+      - [`gn_individual.bib_tracking_devices`](#gn_individualbib_tracking_devices)
     - [Observations faites par des dispositifs de suivi](#observations-faites-par-des-dispositifs-de-suivi)
     - [Modèle de données complet](#modèle-de-données-complet)
   - [Mise en relation avec le besoin initial](#mise-en-relation-avec-le-besoin-initial)
@@ -487,7 +487,7 @@ Nous faisons le choix de partir sur un nouveau modèle de données pour la gesti
 - d'associer plusieurs opérateurs à une capture. Nous réaliserons cela via la nouvelle table de correspondance `gn_individual.cor_role_captures`.
 - de définir plusieurs marquages ou balises par individu. Nous passerons alors par la création
   - de la table`gn_inidvidual.t_individual_deployments` pour la gestion des équipements par capture et par individu. Son modèle permet d'accuillir la nouvelle génération de collier GPS faisant office de marquage et de balise,
-  - de la table `gn_inidvidual.bib_tracking_device` pour l'enregistrement des balises disponibles pour l'équipement des individus.
+  - de la table `gn_inidvidual.bib_tracking_devices` pour l'enregistrement des balises disponibles pour l'équipement des individus.
 - d'associer un état des lieux/constat (état physiologique de l'animal, biométrie, déroulement de l'anesthésie, ...) sur un individu pour un capture donnée. Nous créons pour cela la table `gn_individual.t_individual_capture_reports`.
 
 *Schéma des tables associées à un évènement de capture* :
@@ -542,9 +542,9 @@ Table des déploiements d'équipements (dispositifs de suivi, marquage) sur un i
 | id_individual | INTEGER | FK, NOT NULL | Identifiant de l'individu concerné par le déploiement, lié au champ `id_individual` de la table `gn_monitoring.t_individuals` |
 | id_nomenclature_deployment_type | INTEGER | FK, NOT NULL, CHECK | Identifiant du type de déploiement (ex : boucle, collier, décoloration, peinture, dispositif de suivi) lié au champ `id_nomenclature` de la table `ref_nomenclatures.t_nomenclatures` |
 | id_nomenclature_deployment_location | INTEGER | FK, NOT NULL, CHECK | Identifiant du lieu du déploiement (ex : oreille droite, encolure, aile gauche, carapasse ...) lié au champ `id_nomenclature` de la table `ref_nomenclatures.t_nomenclatures` |
-| id_tracking_device | INTEGER | FK | Identifiant du dispositif de suivi déployé sur l'individu, lié au champ `id_tracking_device` de la table `gn_monitoring.bib_tracking_device` |
+| id_tracking_device | INTEGER | FK | Identifiant du dispositif de suivi déployé sur l'individu, lié au champ `id_tracking_device` de la table `gn_monitoring.bib_tracking_devices` |
 | marking_code | VARCHAR(100) | - | Caractéristique du marquage (ex : lettre, couleur, nom de la plûme décolorée ...) |
-| setting_up_date | DATE | NOT NULL | Date de mise en place de l'équipement (marquage ou dispositif de suivi). |
+| install_date | DATE | NOT NULL | Date de mise en place de l'équipement (marquage ou dispositif de suivi). |
 | removal_date | DATE | - | Date de retrait de l'équipement (marquage ou dispositif de suivi). |
 | comment | TEXT | - | Commentaires |
 | additional_data | JSONB | - | Données non génériques associées au déploiement. Ex : lieu-dit |
@@ -554,15 +554,15 @@ Table des déploiements d'équipements (dispositifs de suivi, marquage) sur un i
 
 ### Bibliothèque de matériel
 
-La bibiothèque `gn_monitoring.bib_tracking_device` permet de recenser les différents matériels de suivi : pièges photos, colliers GPS ...
+La bibiothèque `gn_monitoring.bib_tracking_devices` permet de recenser les différents matériels de suivi : pièges photos, colliers GPS ...
 
 Cette table permet d'associer une balise lors de l'équipement d'un individu, ou bien de définir un piège photo spécifique ou une balise spécifique comme role pour un relevé.  
 
-*Shéma de la table bib_tracking_device* :
+*Shéma de la table bib_tracking_devices* :
 
 ![Schéma bib_tracking_device](./images/materiel.png)
 
-#### `gn_individual.bib_tracking_device`
+#### `gn_individual.bib_tracking_devices`
 
 Bibiothèque pour le gestion des dispositifs de suivi.
 
@@ -650,8 +650,8 @@ Via les tableaux de correspondance suivant, nous validons que l'ensemble des don
 
 | Donnée initiale | Schéma / table | Champ | Explication |
 | :---- | :---- | :---- | :---- |
-| Type d’émetteur | gn_individual.bib_tracking_device | id_nomenclature_device_type | Les émetteurs font parties du matériel de suivi des individus |
-| Informations techniques : manufacturer, model, serial_number | gn_individual.bib_tracking_device | comment | |
+| Type d’émetteur | gn_individual.bib_tracking_devices | id_nomenclature_device_type | Les émetteurs font parties du matériel de suivi des individus |
+| Informations techniques : manufacturer, model, serial_number | gn_individual.bib_tracking_devices | comment | |
 | Date de pose | gn_individual.t_captures | date | Date de la capture associée au déploiement du matériel |
 | Géolocalisation lors de la pose | gn_individual.t_captures | geom_local, geom_4326 | Géolocalisation de la capture associée au déploiement du matériel |
 | Date de retrait | gn_individual.t_individual_deployments | removal_date |  |
