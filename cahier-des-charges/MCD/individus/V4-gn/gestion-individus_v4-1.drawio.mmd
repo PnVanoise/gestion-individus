@@ -1,0 +1,32 @@
+flowchart LR
+  %% Entités
+  pr_cor_counting_occtax["pr_occtax.cor_counting_occtax"]
+  pr_cor_role_releves_occtax["pr_occtax.cor_role_releves_occtax"]
+  gn_monitoring_individuals["gn_monitoring.t_individuals"]
+  pr_occtax_t_occurrences_occtax["pr_occtax.t_occurrences_occtax"]
+  sample_analysis["(quel schéma ?).t_sample_analysis"]
+  gn_monitoring_t_pickups["gn_monitoring.t_pickups"]
+  pr_occtax_t_samples["pr_occtax.t_samples"]
+
+  %% Relations basées sur sources/targets dans ton XML
+  pr_cor_counting_occtax --> gn_monitoring_individuals
+  pr_cor_counting_occtax --> pr_occtax_t_occurrences_occtax
+  pr_cor_role_releves_occtax --> pr_occtax_t_occurrences_occtax
+  gn_monitoring_individuals --> pr_occtax_t_occurrences_occtax
+  pr_occtax_t_occurrences_occtax --> sample_analysis
+  gn_monitoring_t_pickups --> pr_occtax_t_samples
+  pr_occtax_t_samples --> sample_analysis
+
+  %% Optionnel : champs principaux (pour documentation)
+  pr_cor_counting_occtax_fields["id_counting_occtax<br/>unique_id_sinp_occtax<br/>id_occurrence_occtax<br/>id_individual<br/>id_nomenclature_*"]
+  gn_monitoring_individuals_fields["id_individual<br/>uuid_individual<br/>individual_name<br/>cd_nom"]
+  pr_occtax_t_occurrences_occtax_fields["id_occurrence_occtax<br/>unique_id_occurence_occtax<br/>id_releve_occtax"]
+  sample_analysis_fields["id_analysis<br/>id_sample<br/>id_nomenclature_analysis_type<br/>..."]
+  gn_monitoring_t_pickups_fields["id_pickup<br/>id_releve_occtax<br/>id_nomenclature_pickup_protocol"]
+
+  %% Regroupement champs sous entités (affichage)
+  pr_cor_counting_occtax --> pr_cor_counting_occtax_fields
+  gn_monitoring_individuals --> gn_monitoring_individuals_fields
+  pr_occtax_t_occurrences_occtax --> pr_occtax_t_occurrences_occtax_fields
+  sample_analysis --> sample_analysis_fields
+  gn_monitoring_t_pickups --> gn_monitoring_t_pickups_fields

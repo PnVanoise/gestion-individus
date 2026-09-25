@@ -4,21 +4,20 @@ etat-des-lieux/*
 donnees-OFB
 
 # Tout ignorer dans cahier-des-charges
-cahier-des-charges/*
+# cahier-des-charges/*
 
 # Réautoriser MCD
-!cahier-des-charges/MCD/
-cahier-des-charges/MCD/*
+# !cahier-des-charges/MCD/
 
 # Réautoriser uniquement V4-gn
-!cahier-des-charges/MCD/V4-gn/
+# !cahier-des-charges/MCD/individus/V5-gn/
 
 # Ignorer TOUT dans V4-gn par défaut
-cahier-des-charges/MCD/V4-gn/*
+# cahier-des-charges/MCD/V4-gn/*
 
 # Autoriser UNIQUEMENT les fichiers draw.io
-!cahier-des-charges/MCD/V4-gn/*.drawio
-!cahier-des-charges/MCD/V4-gn/*.drawio.png
+# !cahier-des-charges/MCD/V4-gn/*.drawio
+# !cahier-des-charges/MCD/V4-gn/*.drawio.png
 
-!cahier-des-charges/images/
-!cahier-des-charges/images/**
+# !cahier-des-charges/images/
+# !cahier-des-charges/images/**
